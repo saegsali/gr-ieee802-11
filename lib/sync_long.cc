@@ -47,13 +47,15 @@ public:
           d_debug(debug),
           d_offset(0),
           d_state(SYNC),
-          SYNC_LENGTH(sync_length)
+          SYNC_LENGTH(sync_length),
+          d_sample_counter(0)
     {
-
+        // disable tag propagation
         set_tag_propagation_policy(block::TPP_DONT);
         d_correlation = (gr_complex*)volk_malloc(sizeof(gr_complex) * 8192, volk_get_alignment());
     }
 
+    // destructor: free memory
     ~sync_long_impl() {
         volk_free(d_correlation);
     }
@@ -63,16 +65,17 @@ public:
                      gr_vector_const_void_star& input_items,
                      gr_vector_void_star& output_items)
     {
-
+        // read input samples
         const gr_complex* in = (const gr_complex*)input_items[0];
         const gr_complex* in_delayed = (const gr_complex*)input_items[1];
         gr_complex* out = (gr_complex*)output_items[0];
 
-        dout << "LONG ninput[0] " << ninput_items[0] << "   ninput[1] " << ninput_items[1]
-             << "  noutput " << noutput << "   state " << d_state << std::endl;
+        // dout << "LONG ninput[0] " << ninput_items[0] << "   ninput[1] " << ninput_items[1]
+        //      << "  noutput " << noutput << "   state " << d_state << std::endl;
 
         int ninput = std::min(std::min(ninput_items[0], ninput_items[1]), 8192);
 
+        // get tags
         const uint64_t nread = nitems_read(0);
         get_tags_in_range(d_tags, 0, nread, nread + ninput);
         if (d_tags.size()) {
@@ -93,6 +96,35 @@ public:
             }
         }
 
+        pmt::pmt_t rx_time_tag;
+        double rx_time = 0.0;
+        for (const auto& tag : d_tags) {
+            if (pmt::symbol_to_string(tag.key) == "rx_time") {
+                rx_time_tag = tag.value;
+                rx_time = pmt::to_double(rx_time_tag);
+            }
+        }
+
+
+        // std::vector<gr::tag_t> tags_rx_time;
+        // get_tags_in_range(tags_rx_time, 0, nread, nread + ninput);
+
+        // for (auto &tag : tags_rx_time) {
+        //     if (pmt::symbol_to_string(tag.key) == "rx_time") {
+        //         pmt::pmt_t value = tag.value;
+
+        //         // Extract seconds and fractional seconds from the PMT tuple
+        //         double full_sec = pmt::to_double(pmt::tuple_ref(value, 0));
+        //         double frac_sec = pmt::to_double(pmt::tuple_ref(value, 1));
+
+        //         // Convert to a total timestamp (if needed)
+        //         double timestamp = full_sec + frac_sec;
+
+        //         std::cout << "RX Time: " << full_sec << " + " << frac_sec << " = " << timestamp << " seconds" << std::endl;
+        //     }
+        // }
+
+
 
         int i = 0;
         int o = 0;
@@ -100,16 +132,20 @@ public:
         switch (d_state) {
 
         case SYNC:
+            // SYNC: correlate input samples with the long preamble
+            // filter the input samples with the (known) long preamble -> store in d_correlation
             d_fir.filterN(
                 d_correlation, in, std::min(SYNC_LENGTH, std::max(ninput - 63, 0)));
 
             while (i + 63 < ninput) {
-
+                
+                // store correlation result with offset index (d_offset)
                 d_cor.push_back(pair<gr_complex, int>(d_correlation[i], d_offset));
 
                 i++;
                 d_offset++;
 
+                // if we have enough samples, search for the frame start (best match)
                 if (d_offset == SYNC_LENGTH) {
                     search_frame_start();
                     mylog("LONG: frame start at {}",d_frame_start);
@@ -129,11 +165,25 @@ public:
                 int rel = d_offset - d_frame_start;
 
                 if (!rel) {
+                    // Compute packet arrival time
+                    double packet_time = rx_time + (((double)d_sample_counter+ d_freq_offset_short - d_freq_offset) / 20e6); // sr = 20e6
+                    dout << "rx time: " << rx_time << std::endl;
+                    dout << "Packet time: " << packet_time << std::endl;
+                    // Tagging the packet with Time of Arrival (ToA)
+                    add_item_tag(0,
+                                nitems_written(0),
+                                pmt::string_to_symbol("wifi_toa"),
+                                pmt::from_double(packet_time),
+                                pmt::string_to_symbol(name())
+                    );
+
+                    // Additional tag for frame start
                     add_item_tag(0,
                                  nitems_written(0),
                                  pmt::string_to_symbol("wifi_start"),
                                  pmt::from_double(d_freq_offset_short - d_freq_offset),
-                                 pmt::string_to_symbol(name()));
+                                 pmt::string_to_symbol(name())
+                    );
                 }
 
                 if (rel >= 0 && (rel < 128 || ((rel - 128) % 80) > 15)) {
@@ -144,8 +194,7 @@ public:
                 i++;
                 d_offset++;
             }
-
-            break;
+        break;
 
         case RESET: {
             while (o < noutput) {
@@ -163,11 +212,14 @@ public:
         }
         }
 
-        dout << "produced : " << o << " consumed: " << i << std::endl;
+        // dout << "produced : " << o << " consumed: " << i << std::endl;
 
         d_count += o;
         consume(0, i);
         consume(1, i);
+
+        // increment sample counter by the number of samples in the buffer
+        d_sample_counter += i;
         return o;
     }
 
@@ -247,6 +299,9 @@ private:
     const int SYNC_LENGTH;
 
     static const std::vector<gr_complex> LONG;
+
+
+    uint64_t d_sample_counter; // Tracks the number of received samples
 };
 
 sync_long::sptr sync_long::make(unsigned int sync_length, bool log, bool debug)

@@ -1,4 +1,4 @@
-examples/*.py
+# examples/*.py
 .cproject
 .project
 .pydevproject
@@ -10,3 +10,6 @@ examples/*.py
 *.pyo
 build*/
 examples/grc/*.py
+
+examples/recordings/*
+.vscode

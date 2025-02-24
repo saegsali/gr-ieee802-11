@@ -43,7 +43,7 @@ public:
           MIN_PLATEAU(min_plateau),
           d_threshold(threshold)
     {
-
+        // disable tag propagation
         set_tag_propagation_policy(block::TPP_DONT);
     }
 
@@ -68,6 +68,7 @@ public:
         switch (d_state) {
 
         case SEARCH: {
+            // SEACRCH: scan input samples for a correlation peak above the threshold
             int i;
 
             for (i = 0; i < ninput; i++) {
@@ -94,7 +95,7 @@ public:
         }
 
         case COPY: {
-
+            // COPY: copy input samples to output and apply frequency correction
             int o = 0;
             while (o < ninput && o < noutput && d_copied < MAX_SAMPLES) {
                 if (in_cor[o] > d_threshold) {
@@ -106,6 +107,7 @@ public:
                         d_copied = 0;
                         d_plateau = 0;
                         d_freq_offset = arg(in_abs[o]) / 16;
+                        // insert tag at the beginning of the frame with the estimated frequency offset
                         insert_tag(
                             nitems_written(0) + o, d_freq_offset, nitems_read(0) + o);
                         dout << "SHORT Frame!" << std::endl;
@@ -115,7 +117,7 @@ public:
                 } else {
                     d_plateau = 0;
                 }
-
+                // apply coarse frequency correction to remove the frequency offset
                 out[o] = in[o] * exp(gr_complex(0, -d_freq_offset * d_copied));
                 o++;
                 d_copied++;

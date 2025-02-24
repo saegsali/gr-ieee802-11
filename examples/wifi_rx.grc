@@ -9,7 +9,7 @@ options:
     description: ''
     gen_cmake: 'On'
     gen_linking: dynamic
-    generate_options: qt_gui
+    generate_options: no_gui
     hier_block_src_path: '.:'
     id: wifi_rx
     max_nouts: '0'
@@ -28,181 +28,69 @@ options:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [8, 12.0]
+    coordinate: [8, 4.0]
     rotation: 0
     state: enabled
 
 blocks:
 - name: chan_est
-  id: variable_qtgui_chooser
+  id: variable
   parameters:
     comment: ''
-    gui_hint: ''
-    label: ''
-    label0: ''
-    label1: ''
-    label2: ''
-    label3: ''
-    label4: ''
-    labels: '["LS", "LMS", "Linear Comb", "STA"]'
-    num_opts: '0'
-    option0: '0'
-    option1: '1'
-    option2: '2'
-    option3: '3'
-    option4: '4'
-    options: '[0, 1, 2, 3]'
-    orient: Qt.QHBoxLayout
-    type: int
     value: '0'
-    widget: radio_buttons
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [296, 12.0]
+    coordinate: [280, 12.0]
     rotation: 0
     state: enabled
 - name: freq
-  id: variable_qtgui_chooser
+  id: variable
   parameters:
     comment: ''
-    gui_hint: ''
-    label: ''
-    label0: ''
-    label1: ''
-    label2: ''
-    label3: ''
-    label4: ''
-    labels: '[''  1 | 2412.0 | 11g'', ''  2 | 2417.0 | 11g'', ''  3 | 2422.0 | 11g'',
-      ''  4 | 2427.0 | 11g'', ''  5 | 2432.0 | 11g'', ''  6 | 2437.0 | 11g'', ''  7
-      | 2442.0 | 11g'', ''  8 | 2447.0 | 11g'', ''  9 | 2452.0 | 11g'', '' 10 | 2457.0
-      | 11g'', '' 11 | 2462.0 | 11g'', '' 12 | 2467.0 | 11g'', '' 13 | 2472.0 | 11g'',
-      '' 14 | 2484.0 | 11g'', '' 34 | 5170.0 | 11a'', '' 36 | 5180.0 | 11a'', '' 38
-      | 5190.0 | 11a'', '' 40 | 5200.0 | 11a'', '' 42 | 5210.0 | 11a'', '' 44 | 5220.0
-      | 11a'', '' 46 | 5230.0 | 11a'', '' 48 | 5240.0 | 11a'', '' 50 | 5250.0 | 11a'',
-      '' 52 | 5260.0 | 11a'', '' 54 | 5270.0 | 11a'', '' 56 | 5280.0 | 11a'', '' 58
-      | 5290.0 | 11a'', '' 60 | 5300.0 | 11a'', '' 62 | 5310.0 | 11a'', '' 64 | 5320.0
-      | 11a'', ''100 | 5500.0 | 11a'', ''102 | 5510.0 | 11a'', ''104 | 5520.0 | 11a'',
-      ''106 | 5530.0 | 11a'', ''108 | 5540.0 | 11a'', ''110 | 5550.0 | 11a'', ''112
-      | 5560.0 | 11a'', ''114 | 5570.0 | 11a'', ''116 | 5580.0 | 11a'', ''118 | 5590.0
-      | 11a'', ''120 | 5600.0 | 11a'', ''122 | 5610.0 | 11a'', ''124 | 5620.0 | 11a'',
-      ''126 | 5630.0 | 11a'', ''128 | 5640.0 | 11a'', ''132 | 5660.0 | 11a'', ''134
-      | 5670.0 | 11a'', ''136 | 5680.0 | 11a'', ''138 | 5690.0 | 11a'', ''140 | 5700.0
-      | 11a'', ''142 | 5710.0 | 11a'', ''144 | 5720.0 | 11a'', ''149 | 5745.0 | 11a
-      (SRD)'', ''151 | 5755.0 | 11a (SRD)'', ''153 | 5765.0 | 11a (SRD)'', ''155 |
-      5775.0 | 11a (SRD)'', ''157 | 5785.0 | 11a (SRD)'', ''159 | 5795.0 | 11a (SRD)'',
-      ''161 | 5805.0 | 11a (SRD)'', ''165 | 5825.0 | 11a (SRD)'', ''172 | 5860.0 |
-      11p'', ''174 | 5870.0 | 11p'', ''176 | 5880.0 | 11p'', ''178 | 5890.0 | 11p'',
-      ''180 | 5900.0 | 11p'', ''182 | 5910.0 | 11p'', ''184 | 5920.0 | 11p'']'
-    num_opts: '0'
-    option0: '0'
-    option1: '1'
-    option2: '2'
-    option3: '3'
-    option4: '4'
-    options: '[2412000000.0, 2417000000.0, 2422000000.0, 2427000000.0, 2432000000.0,
-      2437000000.0, 2442000000.0, 2447000000.0, 2452000000.0, 2457000000.0, 2462000000.0,
-      2467000000.0, 2472000000.0, 2484000000.0, 5170000000.0, 5180000000.0, 5190000000.0,
-      5200000000.0, 5210000000.0, 5220000000.0, 5230000000.0, 5240000000.0, 5250000000.0,
-      5260000000.0, 5270000000.0, 5280000000.0, 5290000000.0, 5300000000.0, 5310000000.0,
-      5320000000.0, 5500000000.0, 5510000000.0, 5520000000.0, 5530000000.0, 5540000000.0,
-      5550000000.0, 5560000000.0, 5570000000.0, 5580000000.0, 5590000000.0, 5600000000.0,
-      5610000000.0, 5620000000.0, 5630000000.0, 5640000000.0, 5660000000.0, 5670000000.0,
-      5680000000.0, 5690000000.0, 5700000000.0, 5710000000.0, 5720000000.0, 5745000000.0,
-      5755000000.0, 5765000000.0, 5775000000.0, 5785000000.0, 5795000000.0, 5805000000.0,
-      5825000000.0, 5860000000.0, 5870000000.0, 5880000000.0, 5890000000.0, 5900000000.0,
-      5910000000.0, 5920000000.0]'
-    orient: Qt.QVBoxLayout
-    type: real
-    value: '5890000000'
-    widget: combo_box
+    value: '2412000000'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [608, 12.0]
+    coordinate: [456, 12.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: gain
-  id: variable_qtgui_range
+  id: variable
   parameters:
     comment: ''
-    gui_hint: ''
-    label: ''
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '0'
-    step: '0.01'
-    stop: '1'
     value: '0.75'
-    widget: counter_slider
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [472, 12.0]
+    coordinate: [368, 12.0]
     rotation: 0
     state: enabled
 - name: lo_offset
-  id: variable_qtgui_chooser
+  id: variable
   parameters:
     comment: ''
-    gui_hint: ''
-    label: ''
-    label0: ''
-    label1: ''
-    label2: ''
-    label3: ''
-    label4: ''
-    labels: '[]'
-    num_opts: '3'
-    option0: '0'
-    option1: 6e6
-    option2: 11e6
-    option3: '3'
-    option4: '4'
-    options: '[0, 1, 2]'
-    orient: Qt.QVBoxLayout
-    type: real
     value: '0'
-    widget: combo_box
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [176, 12.0]
+    coordinate: [200, 12.0]
     rotation: 0
     state: enabled
 - name: samp_rate
-  id: variable_qtgui_chooser
+  id: variable
   parameters:
     comment: ''
-    gui_hint: ''
-    label: ''
-    label0: ''
-    label1: ''
-    label2: ''
-    label3: ''
-    label4: ''
-    labels: '["5 MHz", "10 MHz", "20 MHz"]'
-    num_opts: '0'
-    option0: '0'
-    option1: '1'
-    option2: '2'
-    option3: '3'
-    option4: '4'
-    options: '[5e6, 10e6, 20e6]'
-    orient: Qt.QVBoxLayout
-    type: real
-    value: 10e6
-    widget: combo_box
+    value: 20e6
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [784, 12.0]
+    coordinate: [552, 12.0]
     rotation: 0
     state: enabled
 - name: sync_length
@@ -286,13 +174,14 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     num_ports: '1'
+    showports: 'False'
     type: complex
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [536, 540.0]
+    coordinate: [520, 540.0]
     rotation: 0
     state: enabled
 - name: blocks_delay_0_0
@@ -305,6 +194,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     num_ports: '1'
+    showports: 'False'
     type: complex
     vlen: '1'
   states:
@@ -332,6 +222,27 @@ blocks:
     coordinate: [1168, 400]
     rotation: 270
     state: enabled
+- name: blocks_file_meta_source_0
+  id: blocks_file_meta_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    detached: 'False'
+    file: /home/joel/kDrive/ETHZ/Semester_Project/GnuRadio/gr-ieee802-11/examples/recordings/wifi_20250218.txt
+    hdr_file: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    repeat: 'True'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 476.0]
+    rotation: 0
+    state: enabled
 - name: blocks_file_sink_0
   id: blocks_file_sink
   parameters:
@@ -347,9 +258,46 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [768, 908]
+    coordinate: [768, 972.0]
     rotation: 180
     state: disabled
+- name: blocks_file_source_0
+  id: blocks_file_source
+  parameters:
+    affinity: ''
+    alias: ''
+    begin_tag: pmt.PMT_NIL
+    comment: ''
+    file: /home/joel/kDrive/ETHZ/Semester_Project/GnuRadio/gr-ieee802-11/examples/recordings/wifi_iq_only_20250218_short.txt
+    length: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    offset: '0'
+    repeat: 'True'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [16, 644.0]
+    rotation: 0
+    state: disabled
+- name: blocks_message_debug_0
+  id: blocks_message_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    en_uvec: 'True'
+    log_level: info
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [240, 984.0]
+    rotation: 0
+    state: true
 - name: blocks_moving_average_xx_0
   id: blocks_moving_average_xx
   parameters:
@@ -426,6 +374,174 @@ blocks:
     coordinate: [944, 528.0]
     rotation: 0
     state: enabled
+- name: blocks_tag_debug_0
+  id: blocks_tag_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    display: 'True'
+    filter: '"wifi_toa"'
+    name: wifi toa
+    num_inputs: '1'
+    type: complex
+    vlen: '64'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1000, 660.0]
+    rotation: 0
+    state: disabled
+- name: blocks_tag_debug_0_0
+  id: blocks_tag_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    display: 'True'
+    filter: '"wifi_toa"'
+    name: wifi toa (frame equalizer)
+    num_inputs: '1'
+    type: byte
+    vlen: '64'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [728, 636.0]
+    rotation: 0
+    state: disabled
+- name: blocks_throttle2_0
+  id: blocks_throttle2
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    limit: auto
+    maximum: '0.1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [112, 380.0]
+    rotation: 0
+    state: enabled
+- name: epy_block_0
+  id: epy_block
+  parameters:
+    _source_code: "import socket\nimport struct\nimport pmt\nimport time\nimport numpy\
+      \ as np\nfrom gnuradio import gr\n\nclass UDPTagSender(gr.basic_block):\n  \
+      \  def __init__(self, udp_ip=\"127.0.0.1\", udp_port=5005):\n        gr.basic_block.__init__(self,\n\
+      \            name=\"UDP Tag Sender\",\n            in_sig=[(np.complex64, 1)],\
+      \  # Assuming complex samples\n            out_sig=None)\n        \n       \
+      \ self.udp_ip = udp_ip\n        self.udp_port = udp_port\n        self.sock\
+      \ = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)\n        self.mac_address\
+      \ = \"00:11:22:33:44:55\"  # Replace with actual MAC\n\n    def general_work(self,\
+      \ input_items, output_items):\n        nread = self.nitems_read(0)  # Get the\
+      \ starting sample index\n        tags = self.get_tags_in_window(0, 0, len(input_items[0]))\n\
+      \        for tag in tags:\n            key = pmt.to_python(tag.key) # convert\
+      \ from PMT to python string\n            value = pmt.to_python(tag.value) #\
+      \ Note that the type(value) can be several things, it depends what PMT type\
+      \ it was\n            print(f\"key: {key}\")\n            print(f\"value: {value}\
+      \ as {type(value)}\")\n             \n        timestamp = time.time()  # Dummy\
+      \ timestamp (current time)\n        mac_address = bytes.fromhex(\"001122334455\"\
+      )  # Dummy MAC address (6 bytes)\n        \n        packet_data = struct.pack(\"\
+      !d6s\", timestamp, mac_address)  # 8 bytes timestamp + 6 bytes MAC\n       \
+      \ \n        self.sock.sendto(packet_data, (self.udp_ip, self.udp_port))\n\n\
+      \        self.consume(0, len(input_items[0]))  # Consume all samples\n     \
+      \   return 0\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    udp_ip: '''127.0.0.1'''
+    udp_port: '5005'
+  states:
+    _io_cache: ('UDP Tag Sender', 'UDPTagSender', [('udp_ip', "'127.0.0.1'"), ('udp_port',
+      '5005')], [('0', 'complex', 1)], [], '', ['udp_ip', 'udp_port'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1024, 436.0]
+    rotation: 0
+    state: disabled
+- name: epy_block_1
+  id: epy_block
+  parameters:
+    _source_code: "import socket\nfrom gnuradio import gr\n\nclass udp_sender(gr.basic_block):\n\
+      \    def __init__(self, host=\"127.0.0.1\", port=5005, node_id=0):\n       \
+      \ gr.basic_block.__init__(self,\n            name=\"udp_sender\",\n        \
+      \    in_sig=None,   # No regular input signal, only messages\n            out_sig=None)\n\
+      \n        self.host = host\n        self.port = port\n        self.sock = socket.socket(socket.AF_INET,\
+      \ socket.SOCK_DGRAM)\n        self.node_id = node_id\n\n        # Register message\
+      \ input port\n        self.message_port_register_in(gr.pmt.intern(\"in\"))\n\
+      \        self.set_msg_handler(gr.pmt.intern(\"in\"), self.handle_msg)\n\n  \
+      \  def handle_msg(self, msg):\n        \"\"\"Handles incoming messages and sends\
+      \ them over UDP.\"\"\"\n        # template dict with dummy values\n        msg_dict\
+      \ = {\"node\": \"\",\"wifi_toa\": 0.0, \"address 3\": \"\", \"address 2\": \"\
+      \", \"address 1\": \"\", \"sequence number\": \"\", \"ssid\": \"\", \"subtype\"\
+      : \"\", \"type\": \"\", \"duration\": \"\", \"dlt\": \"\", \"frame bytes\":\
+      \ \"\", \"encoding\": \"\", \"snr\": \"\", \"nominal frequency\": \"\", \"frequency\
+      \ offset\": \"\", \"beta\": \"\", \"csi\": []}\n        msg_dict[\"node\"] =\
+      \ self.node_id\n        \n        try:\n            print(\"=+===========================================================\"\
+      )\n            \n            # Send the serialized message over UDP\n      \
+      \      msg_str = str.split(str(msg), \") (\")\n            remove_chars = [\"\
+      (\", \")\", \"#\", \"[\", \"]\", \"'\"]\n            for c in remove_chars:\n\
+      \                msg_str = [m.replace(c, \"\") for m in msg_str]\n         \
+      \       # print(f\"Message: {msg_str}\")\n            for m in msg_str:\n  \
+      \              tmp = m.split(\" . \")\n                # print(f\"Tmp: {tmp}\"\
+      )\n                if len(tmp) > 1:\n                    try:\n            \
+      \            msg_dict[tmp[0]] = tmp[1]\n                        print(f\"Key:\
+      \ {tmp[0]}, Value: {tmp[1]}\")\n                    except:\n              \
+      \          print(f\"Error parsing message: {tmp}\")\n                      \
+      \  pass\n\n                \n            self.sock.sendto(str(msg_dict).encode('utf-8'),\
+      \ (self.host, self.port))\n        except Exception as e:\n            print(f\"\
+      Error sending UDP message: {e}\")\n\nif __name__ == \"__main__\":\n    # Create\
+      \ the UDP sender block\n    sender = udp_sender(host=\"127.0.0.1\", port=5005)\n\
+      \    message = \"((address 3 . 48:2c:d0:3c:db:82) (address 2 . 48:2c:d0:3c:db:82)\
+      \ (address 1 . ff:ff:ff:ff:ff:ff) (sequence number . 212) (ssid . eduroam) (subtype\
+      \ . Beacon) (type . management) (duration . 0) (dlt . 105) (frame bytes . 370)\
+      \ (encoding . 0) (snr . 18.5551) (nominal frequency . 2.412e+09) (frequency\
+      \ offset . -21147.7) (beta . 0.907213) (csi . #[(0.566118,-0.298401) (0.631518,-0.245726)\
+      \ (0.657571,-0.144538) (0.690639,0.0103949) (0.678849,0.072456) (0.680707,0.0461684)\
+      \ (0.591707,0.162084) (0.478976,0.212965) (0.451279,0.239542) (0.387056,0.253145)\
+      \ (0.250386,0.159893) (0.191558,0.107284) (0.171853,0.118913) (0.0702613,-0.0185443)\
+      \ (0.109905,-0.146988) (0.0742382,-0.270683) (0.165585,-0.379584) (0.168831,-0.497667)\
+      \ (0.354727,-0.591889) (0.437455,-0.557083) (0.570716,-0.612538) (0.77234,-0.635723)\
+      \ (0.912641,-0.598075) (0.93393,-0.483502) (1.00211,-0.349984) (1.08942,-0.176415)\
+      \ (0.943632,0.156554) (0.82913,0.334521) (0.568084,0.285006) (0.462272,0.267365)\
+      \ (0.253101,0.193681) (0.109876,0.0587345) (0.087862,-0.102265) (0.031854,-0.287846)\
+      \ (0.198047,-0.43826) (0.38686,-0.529481) (0.521877,-0.604409) (0.747475,-0.603303)\
+      \ (0.99424,-0.58217) (1.12874,-0.440593) (1.28294,-0.222313) (1.36439,0.0103244)\
+      \ (1.27361,0.252473) (1.2032,0.410093) (1.0735,0.546541) (0.885395,0.565614)\
+      \ (0.754109,0.613179) (0.580458,0.516457) (0.556105,0.360515) (0.411728,0.209677)\
+      \ (0.452793,0.0442217) (0.580392,-0.111653)]) (wifi_toa . 0.297104))\"\n   \
+      \ sender.handle_msg(message)"
+    affinity: ''
+    alias: ''
+    comment: ''
+    host: udp_ip_address
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    node_id: '0'
+    port: udp_port
+  states:
+    _io_cache: ('udp_sender', 'udp_sender', [('host', "'127.0.0.1'"), ('port', '5005'),
+      ('node_id', '0')], [('in', 'message', 1)], [], '', ['host', 'node_id', 'port'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [632, 1036.0]
+    rotation: 0
+    state: true
 - name: fft_vxx_0
   id: fft_vxx
   parameters:
@@ -444,7 +560,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [168, 672]
+    coordinate: [224, 724.0]
     rotation: 0
     state: enabled
 - name: foo_wireshark_connector_0
@@ -461,9 +577,26 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [952, 916]
+    coordinate: [952, 980.0]
     rotation: 180
     state: disabled
+- name: freq
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: Center frequency
+    short_id: f
+    type: intx
+    value: '2412000000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [664, 12.0]
+    rotation: 0
+    state: true
 - name: ieee802_11_decode_mac_0
   id: ieee802_11_decode_mac
   parameters:
@@ -478,7 +611,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [864, 676]
+    coordinate: [864, 756.0]
     rotation: 0
     state: enabled
 - name: ieee802_11_frame_equalizer_0
@@ -498,7 +631,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [432, 672]
+    coordinate: [488, 740.0]
     rotation: 0
     state: enabled
 - name: ieee802_11_parse_mac_0
@@ -515,7 +648,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [872, 796.0]
+    coordinate: [864, 852.0]
     rotation: 180
     state: enabled
 - name: ieee802_11_sync_long_0
@@ -533,7 +666,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [744, 508.0]
+    coordinate: [728, 508.0]
     rotation: 0
     state: enabled
 - name: ieee802_11_sync_short_0
@@ -552,9 +685,43 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [304, 488.0]
+    coordinate: [288, 496.0]
     rotation: 0
     state: enabled
+- name: node
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: ID of receiver node
+    short_id: n
+    type: intx
+    value: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1120, 12.0]
+    rotation: 0
+    state: true
+- name: parameter_0
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: ''
+    short_id: ''
+    type: ''
+    value: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1056, 320.0]
+    rotation: 0
+    state: true
 - name: pdu_pdu_to_tagged_stream_0
   id: pdu_pdu_to_tagged_stream
   parameters:
@@ -569,9 +736,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [576, 836.0]
+    coordinate: [576, 900.0]
     rotation: 180
-    state: true
+    state: disabled
 - name: qtgui_const_sink_x_0
   id: qtgui_const_sink_x
   parameters:
@@ -661,9 +828,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [344, 828]
+    coordinate: [344, 892.0]
     rotation: 180
-    state: enabled
+    state: disabled
 - name: qtgui_time_sink_x_0
   id: qtgui_time_sink_x
   parameters:
@@ -758,9 +925,43 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1164, 520]
+    coordinate: [1164.0, 584]
     rotation: 270
-    state: enabled
+    state: disabled
+- name: udp_ip_address
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: IP address of udp receiver
+    short_id: a
+    type: str
+    value: 127.0.0.1
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [808, 12.0]
+    rotation: 0
+    state: true
+- name: udp_port
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: Port of udp receiver
+    short_id: p
+    type: intx
+    value: '5005'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [968, 12.0]
+    rotation: 0
+    state: true
 - name: uhd_usrp_source_0
   id: uhd_usrp_source
   parameters:
@@ -1177,7 +1378,7 @@ blocks:
     sd_spec6: ''
     sd_spec7: ''
     show_lo_controls: 'False'
-    start_time: '-1.0'
+    start_time: '0'
     stream_args: ''
     stream_chans: '[]'
     sync: sync
@@ -1196,7 +1397,7 @@ blocks:
     bus_structure: null
     coordinate: [32, 216]
     rotation: 0
-    state: enabled
+    state: disabled
 
 connections:
 - [blocks_complex_to_mag_0, '0', blocks_divide_xx_0, '0']
@@ -1207,18 +1408,28 @@ connections:
 - [blocks_delay_0_0, '0', ieee802_11_sync_short_0, '0']
 - [blocks_divide_xx_0, '0', ieee802_11_sync_short_0, '2']
 - [blocks_divide_xx_0, '0', qtgui_time_sink_x_0, '0']
+- [blocks_file_meta_source_0, '0', blocks_throttle2_0, '0']
+- [blocks_file_source_0, '0', blocks_throttle2_0, '0']
 - [blocks_moving_average_xx_0, '0', blocks_divide_xx_0, '1']
 - [blocks_moving_average_xx_1, '0', blocks_complex_to_mag_0, '0']
 - [blocks_moving_average_xx_1, '0', ieee802_11_sync_short_0, '1']
 - [blocks_multiply_xx_0, '0', blocks_moving_average_xx_1, '0']
+- [blocks_stream_to_vector_0, '0', blocks_tag_debug_0, '0']
 - [blocks_stream_to_vector_0, '0', fft_vxx_0, '0']
+- [blocks_throttle2_0, '0', blocks_complex_to_mag_squared_0, '0']
+- [blocks_throttle2_0, '0', blocks_delay_0_0, '0']
+- [blocks_throttle2_0, '0', blocks_multiply_xx_0, '0']
 - [fft_vxx_0, '0', ieee802_11_frame_equalizer_0, '0']
 - [foo_wireshark_connector_0, '0', blocks_file_sink_0, '0']
 - [ieee802_11_decode_mac_0, out, foo_wireshark_connector_0, in]
 - [ieee802_11_decode_mac_0, out, ieee802_11_parse_mac_0, in]
+- [ieee802_11_frame_equalizer_0, '0', blocks_tag_debug_0_0, '0']
 - [ieee802_11_frame_equalizer_0, '0', ieee802_11_decode_mac_0, '0']
 - [ieee802_11_frame_equalizer_0, symbols, pdu_pdu_to_tagged_stream_0, pdus]
+- [ieee802_11_parse_mac_0, out, blocks_message_debug_0, print]
+- [ieee802_11_parse_mac_0, out, epy_block_1, in]
 - [ieee802_11_sync_long_0, '0', blocks_stream_to_vector_0, '0']
+- [ieee802_11_sync_long_0, '0', epy_block_0, '0']
 - [ieee802_11_sync_short_0, '0', blocks_delay_0, '0']
 - [ieee802_11_sync_short_0, '0', ieee802_11_sync_long_0, '0']
 - [pdu_pdu_to_tagged_stream_0, '0', qtgui_const_sink_x_0, '0']
@@ -1228,4 +1439,4 @@ connections:
 
 metadata:
   file_format: 1
-  grc_version: v3.10.2.0-68-g62a7e451
+  grc_version: 3.10.7.0

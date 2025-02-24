@@ -135,7 +135,9 @@ int frame_equalizer_impl::general_work(int noutput_items,
     while ((i < ninput_items[0]) && (o < noutput_items)) {
 
         get_tags_in_window(tags, 0, i, i + 1, pmt::string_to_symbol("wifi_start"));
+        // get_tags_in_window(tags, 0, i, i + 1, pmt::string_to_symbol("wifi_toa"));
 
+        // TODO: get ToA here??
         // new frame
         if (tags.size()) {
             d_current_symbol = 0;
@@ -148,6 +150,17 @@ int frame_equalizer_impl::general_work(int noutput_items,
             d_er = 0;
 
             dout << "epsilon: " << d_epsilon0 << std::endl;
+        }
+
+
+        // forward wifi_toa tag
+        get_tags_in_window(tags, 0, i, i + 1, pmt::string_to_symbol("wifi_toa"));
+        if (tags.size()) {
+            add_item_tag(0,
+                         nitems_written(0) + o,
+                         pmt::string_to_symbol("wifi_toa"),
+                         tags.front().value,
+                         alias_pmt());
         }
 
         // not interesting -> skip

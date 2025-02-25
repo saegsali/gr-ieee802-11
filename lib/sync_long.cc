@@ -97,13 +97,28 @@ public:
         }
 
         pmt::pmt_t rx_time_tag;
-        double rx_time = 0.0;
+        uint64_t full_sec = 0;
+        double frac_sec = 0.0;
+
         for (const auto& tag : d_tags) {
             if (pmt::symbol_to_string(tag.key) == "rx_time") {
                 rx_time_tag = tag.value;
-                rx_time = pmt::to_double(rx_time_tag);
+                
+                if (pmt::is_tuple(rx_time_tag) && pmt::length(rx_time_tag) == 2) {
+                    full_sec = pmt::to_uint64(pmt::tuple_ref(rx_time_tag, 0));
+                    frac_sec = pmt::to_double(pmt::tuple_ref(rx_time_tag, 1));
+
+                    // Print in the requested format
+                    std::cout << "Tag Debug: RX TIME\n"
+                            << "Input Stream: 00\n"
+                            << "  Offset: " << tag.offset
+                            << "  Source: " << tag.srcid
+                            << "  Key: rx_time"
+                            << "  Value: {" << full_sec << " " << frac_sec << "}\n";
+                }
             }
         }
+
 
 
         // std::vector<gr::tag_t> tags_rx_time;

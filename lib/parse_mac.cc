@@ -81,17 +81,17 @@ public:
 
         d_meta = pmt::dict_add(d_meta, pmt::mp("duration"), pmt::mp(h->duration));
 
-        std::vector<gr::tag_t> tags;
-        get_tags_in_range(tags, 0, 0, frame_len);
-        pmt::pmt_t wifi_toa_tag;
-        double wifi_toa = 0.0;
-        for (const auto& tag : tags) {
-            if (pmt::symbol_to_string(tag.key) == "wifi_toa") {
-                wifi_toa_tag = tag.value;
-                wifi_toa = pmt::to_double(wifi_toa_tag);
-                dout << "WIFI TOA: " << wifi_toa << std::endl;
-            }
-        }
+        // std::vector<gr::tag_t> tags;
+        // get_tags_in_range(tags, 0, 0, frame_len);
+        // pmt::pmt_t wifi_toa_tag;
+        // double wifi_toa = 0.0;
+        // for (const auto& tag : tags) {
+        //     if (pmt::symbol_to_string(tag.key) == "wifi_toa") {
+        //         wifi_toa_tag = tag.value;
+        //         wifi_toa = pmt::to_double(wifi_toa_tag);
+        //         dout << "WIFI TOA: " << wifi_toa << std::endl;
+        //     }
+        // }
 
 #define HEX(a) std::hex << std::setfill('0') << std::setw(2) << int(a) << std::dec
         dout << "duration: " << HEX(h->duration >> 8) << " " << HEX(h->duration & 0xff)

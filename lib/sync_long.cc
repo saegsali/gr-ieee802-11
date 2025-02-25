@@ -97,7 +97,7 @@ public:
         }
 
         pmt::pmt_t rx_time_tag;
-        double full_sec = 0;
+        uint64_t full_sec = 0;
         double frac_sec = 0.0;
         double rx_time = 0.0;
 
@@ -106,7 +106,7 @@ public:
                 rx_time_tag = tag.value;
                 
                 if (pmt::is_tuple(rx_time_tag) && pmt::length(rx_time_tag) == 2) {
-                    full_sec = pmt::to_double(pmt::tuple_ref(rx_time_tag, 0));
+                    full_sec = pmt::to_uint64(pmt::tuple_ref(rx_time_tag, 0));
                     frac_sec = pmt::to_double(pmt::tuple_ref(rx_time_tag, 1));
 
                     // Print in the requested format

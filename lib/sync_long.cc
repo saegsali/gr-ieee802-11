@@ -109,7 +109,7 @@ public:
                     frac_sec = pmt::to_double(pmt::tuple_ref(rx_time_tag, 1));
 
                     // Print in the requested format
-                    std::cout << "Tag Debug: RX TIME\n"
+                    std::cout << "RX TIME (in sync_long)\n"
                             << "Input Stream: 00\n"
                             << "  Offset: " << tag.offset
                             << "  Source: " << tag.srcid

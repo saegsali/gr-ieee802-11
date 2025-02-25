@@ -19,7 +19,8 @@ import signal
 from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
-from gnuradio import gr, blocks
+from gnuradio import uhd
+import time
 import ieee802_11
 import wifi_rx_epy_block_1 as epy_block_1  # embedded python block
 
@@ -54,6 +55,28 @@ class wifi_rx(gr.top_block):
         # Blocks
         ##################################################
 
+        self.uhd_usrp_source_0 = uhd.usrp_source(
+            ",".join(('', "")),
+            uhd.stream_args(
+                cpu_format="fc32",
+                args='',
+                channels=list(range(0,1)),
+            ),
+        )
+        self.uhd_usrp_source_0.set_clock_source('gpsdo', 0)
+        self.uhd_usrp_source_0.set_time_source('gpsdo', 0)
+        self.uhd_usrp_source_0.set_samp_rate(samp_rate)
+        # Set the time to GPS time on next PPS
+        # get_mboard_sensor("gps_time") returns just after the PPS edge,
+        # thus add one second and set the time on the next PPS
+        self.uhd_usrp_source_0.set_time_next_pps(uhd.time_spec(self.uhd_usrp_source_0.get_mboard_sensor("gps_time").to_int() + 1.0))
+        # Sleep 1 second to ensure next PPS has come
+        time.sleep(1)
+
+        self.uhd_usrp_source_0.set_center_freq(uhd.tune_request(freq, rf_freq = freq - lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
+        self.uhd_usrp_source_0.set_normalized_gain(gain, 0)
+
+        self.uhd_usrp_source_0.set_start_time(uhd.time_spec(0))
         self.ieee802_11_sync_short_0 = ieee802_11.sync_short(0.56, 2, False, False)
         self.ieee802_11_sync_long_0 = ieee802_11.sync_long(sync_length, False, False)
         self.ieee802_11_parse_mac_0 = ieee802_11.parse_mac(False, True)
@@ -61,13 +84,11 @@ class wifi_rx(gr.top_block):
         self.ieee802_11_decode_mac_0 = ieee802_11.decode_mac(True, False)
         self.fft_vxx_0 = fft.fft_vcc(64, True, window.rectangular(64), True, 1)
         self.epy_block_1 = epy_block_1.udp_sender(host=udp_ip_address, port=udp_port, node_id=0)
-        self.blocks_throttle2_0 = blocks.throttle( gr.sizeof_gr_complex*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
         self.blocks_stream_to_vector_0 = blocks.stream_to_vector(gr.sizeof_gr_complex*1, 64)
         self.blocks_multiply_xx_0 = blocks.multiply_vcc(1)
         self.blocks_moving_average_xx_1 = blocks.moving_average_cc(window_size, 1, 4000, 1)
         self.blocks_moving_average_xx_0 = blocks.moving_average_ff((window_size  + 16), 1, 4000, 1)
         self.blocks_message_debug_0 = blocks.message_debug(True, gr.log_levels.info)
-        self.blocks_file_meta_source_0 = blocks.file_meta_source('/home/joel/kDrive/ETHZ/Semester_Project/GnuRadio/gr-ieee802-11/examples/recordings/wifi_20250218.txt', True, False, '')
         self.blocks_divide_xx_0 = blocks.divide_ff(1)
         self.blocks_delay_0_0 = blocks.delay(gr.sizeof_gr_complex*1, 16)
         self.blocks_delay_0 = blocks.delay(gr.sizeof_gr_complex*1, sync_length)
@@ -89,20 +110,19 @@ class wifi_rx(gr.top_block):
         self.connect((self.blocks_delay_0_0, 0), (self.blocks_conjugate_cc_0, 0))
         self.connect((self.blocks_delay_0_0, 0), (self.ieee802_11_sync_short_0, 0))
         self.connect((self.blocks_divide_xx_0, 0), (self.ieee802_11_sync_short_0, 2))
-        self.connect((self.blocks_file_meta_source_0, 0), (self.blocks_throttle2_0, 0))
         self.connect((self.blocks_moving_average_xx_0, 0), (self.blocks_divide_xx_0, 1))
         self.connect((self.blocks_moving_average_xx_1, 0), (self.blocks_complex_to_mag_0, 0))
         self.connect((self.blocks_moving_average_xx_1, 0), (self.ieee802_11_sync_short_0, 1))
         self.connect((self.blocks_multiply_xx_0, 0), (self.blocks_moving_average_xx_1, 0))
         self.connect((self.blocks_stream_to_vector_0, 0), (self.fft_vxx_0, 0))
-        self.connect((self.blocks_throttle2_0, 0), (self.blocks_complex_to_mag_squared_0, 0))
-        self.connect((self.blocks_throttle2_0, 0), (self.blocks_delay_0_0, 0))
-        self.connect((self.blocks_throttle2_0, 0), (self.blocks_multiply_xx_0, 0))
         self.connect((self.fft_vxx_0, 0), (self.ieee802_11_frame_equalizer_0, 0))
         self.connect((self.ieee802_11_frame_equalizer_0, 0), (self.ieee802_11_decode_mac_0, 0))
         self.connect((self.ieee802_11_sync_long_0, 0), (self.blocks_stream_to_vector_0, 0))
         self.connect((self.ieee802_11_sync_short_0, 0), (self.blocks_delay_0, 0))
         self.connect((self.ieee802_11_sync_short_0, 0), (self.ieee802_11_sync_long_0, 0))
+        self.connect((self.uhd_usrp_source_0, 0), (self.blocks_complex_to_mag_squared_0, 0))
+        self.connect((self.uhd_usrp_source_0, 0), (self.blocks_delay_0_0, 0))
+        self.connect((self.uhd_usrp_source_0, 0), (self.blocks_multiply_xx_0, 0))
 
 
     def get_freq(self):
@@ -111,6 +131,7 @@ class wifi_rx(gr.top_block):
     def set_freq(self, freq):
         self.freq = freq
         self.ieee802_11_frame_equalizer_0.set_frequency(self.freq)
+        self.uhd_usrp_source_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
 
     def get_node(self):
         return self.node
@@ -158,20 +179,22 @@ class wifi_rx(gr.top_block):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.blocks_throttle2_0.set_sample_rate(self.samp_rate)
         self.ieee802_11_frame_equalizer_0.set_bandwidth(self.samp_rate)
+        self.uhd_usrp_source_0.set_samp_rate(self.samp_rate)
 
     def get_lo_offset(self):
         return self.lo_offset
 
     def set_lo_offset(self, lo_offset):
         self.lo_offset = lo_offset
+        self.uhd_usrp_source_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
 
     def get_gain(self):
         return self.gain
 
     def set_gain(self, gain):
         self.gain = gain
+        self.uhd_usrp_source_0.set_normalized_gain(self.gain, 0)
 
     def get_chan_est(self):
         return self.chan_est

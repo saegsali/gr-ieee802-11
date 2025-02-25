@@ -242,7 +242,7 @@ blocks:
     bus_structure: null
     coordinate: [8, 476.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_file_sink_0
   id: blocks_file_sink
   parameters:
@@ -432,7 +432,7 @@ blocks:
     bus_structure: null
     coordinate: [112, 380.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: epy_block_0
   id: epy_block
   parameters:
@@ -1064,7 +1064,7 @@ blocks:
     center_freq8: '0'
     center_freq9: '0'
     clock_rate: '0.0'
-    clock_source0: ''
+    clock_source0: gpsdo
     clock_source1: ''
     clock_source2: ''
     clock_source3: ''
@@ -1381,8 +1381,8 @@ blocks:
     start_time: '0'
     stream_args: ''
     stream_chans: '[]'
-    sync: sync
-    time_source0: ''
+    sync: gps_time
+    time_source0: gpsdo
     time_source1: ''
     time_source2: ''
     time_source3: ''
@@ -1395,9 +1395,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [32, 216]
+    coordinate: [32, 156.0]
     rotation: 0
-    state: disabled
+    state: enabled
 
 connections:
 - [blocks_complex_to_mag_0, '0', blocks_divide_xx_0, '0']

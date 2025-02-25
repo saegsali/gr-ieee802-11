@@ -65,8 +65,6 @@ public:
 
         mylog("length: {}",frame_len);
 
-        std::vector<gr::tag_t> tags;
-        get_tags_in_range(tags, 0, 0, frame_len);
         // if (tags.size()) {
         //     // print value
         //     pmt::pmt_t value = tags.front().value;
@@ -83,6 +81,8 @@ public:
 
         d_meta = pmt::dict_add(d_meta, pmt::mp("duration"), pmt::mp(h->duration));
 
+        std::vector<gr::tag_t> tags;
+        get_tags_in_range(tags, 0, 0, frame_len);
         pmt::pmt_t wifi_toa_tag;
         double wifi_toa = 0.0;
         for (const auto& tag : tags) {

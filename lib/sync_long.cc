@@ -48,7 +48,8 @@ public:
           d_offset(0),
           d_state(SYNC),
           SYNC_LENGTH(sync_length),
-          d_sample_counter(0)
+          d_sample_counter(0),
+          rx_time(0.0)
     {
         // disable tag propagation
         set_tag_propagation_policy(block::TPP_DONT);
@@ -81,67 +82,53 @@ public:
         if (d_tags.size()) {
             std::sort(d_tags.begin(), d_tags.end(), gr::tag_t::offset_compare);
 
-            const uint64_t offset = d_tags.front().offset;
-
-            if (offset > nread) {
-                ninput = offset - nread;
-            } else {
-                if (d_offset && (d_state == SYNC)) {
-                    throw std::runtime_error("wtf");
-                }
-                if (d_state == COPY) {
-                    d_state = RESET;
-                }
-                d_freq_offset_short = pmt::to_double(d_tags.front().value);
-            }
-        }
-
-        pmt::pmt_t rx_time_tag;
-        uint64_t full_sec = 0;
-        double frac_sec = 0.0;
-        double rx_time = 0.0;
-
-        for (const auto& tag : d_tags) {
-            if (pmt::symbol_to_string(tag.key) == "rx_time") {
-                rx_time_tag = tag.value;
-                const pmt::pmt_t& value = tag.value;
+            // loop over tags and check if we have to skip samples
+            for (const auto& tag : d_tags) {
+                // print name of the tag
+                // std::cout << "Got tag:" << "  Key: " << pmt::symbol_to_string(tag.key) << std::endl;
                 
-                if (pmt::is_tuple(rx_time_tag) && pmt::length(rx_time_tag) == 2) {
-                    full_sec = pmt::to_uint64(pmt::tuple_ref(value, 0));
-                    frac_sec = pmt::to_double(pmt::tuple_ref(value, 1));
+                if (pmt::symbol_to_string(tag.key) == "wifi_start") {
+                    const uint64_t offset = tag.offset;
 
-                    // Print in the requested format
-                    std::cout << "RX TIME (in sync_long)\n"
-                            << "Input Stream: 00\n"
-                            << "  Offset: " << tag.offset
-                            << "  Source: " << tag.srcid
-                            << "  Key: rx_time"
-                            << "  Value: {" << full_sec << " " << frac_sec << "}\n";
-                    rx_time = full_sec + frac_sec;
+                    if (offset > nread) {
+                        ninput = offset - nread;
+                    } else {
+                        if (d_offset && (d_state == SYNC)) {
+                            throw std::runtime_error("wtf");
+                        }
+                        if (d_state == COPY) {
+                            d_state = RESET;
+                        }
+                        d_freq_offset_short = pmt::to_double(tag.value);
+                    }   
+                }
+                else if (pmt::symbol_to_string(tag.key) == "rx_time") {
+                    // pmt::pmt_t rx_time_tag;
+                    uint64_t full_sec = 0;
+                    double frac_sec = 0.0;
+                    // rx_time_tag = tag.value;
+                    const pmt::pmt_t& value = tag.value;
+                    
+                    if (pmt::is_tuple(tag.value) && pmt::length(tag.value) == 2) {
+                        full_sec = pmt::to_uint64(pmt::tuple_ref(value, 0));
+                        frac_sec = pmt::to_double(pmt::tuple_ref(value, 1));
+
+                        // Print in the requested format
+                        // std::cout << "RX TIME (in sync_long)\n"
+                        //         << "Input Stream: 00\n"
+                        //         << "  Offset: " << tag.offset
+                        //         << "  Source: " << tag.srcid
+                        //         << "  Key: rx_time"
+                        //         << "  Value: {" << full_sec << " " << frac_sec << "}\n";
+                        rx_time = (double)full_sec + frac_sec;
+                    }   
+                }
+                else if (pmt::symbol_to_string(tag.key) == "sample_counter") {
+                    d_sample_counter = pmt::to_uint64(tag.value);
+                    // std::cout << "Sample Counter: " << d_sample_counter << std::endl;
                 }
             }
         }
-
-
-
-        // std::vector<gr::tag_t> tags_rx_time;
-        // get_tags_in_range(tags_rx_time, 0, nread, nread + ninput);
-
-        // for (auto &tag : tags_rx_time) {
-        //     if (pmt::symbol_to_string(tag.key) == "rx_time") {
-        //         pmt::pmt_t value = tag.value;
-
-        //         // Extract seconds and fractional seconds from the PMT tuple
-        //         double full_sec = pmt::to_double(pmt::tuple_ref(value, 0));
-        //         double frac_sec = pmt::to_double(pmt::tuple_ref(value, 1));
-
-        //         // Convert to a total timestamp (if needed)
-        //         double timestamp = full_sec + frac_sec;
-
-        //         std::cout << "RX Time: " << full_sec << " + " << frac_sec << " = " << timestamp << " seconds" << std::endl;
-        //     }
-        // }
-
 
 
         int i = 0;
@@ -237,7 +224,6 @@ public:
         consume(1, i);
 
         // increment sample counter by the number of samples in the buffer
-        d_sample_counter += i;
         return o;
     }
 
@@ -320,6 +306,7 @@ private:
 
 
     uint64_t d_sample_counter; // Tracks the number of received samples
+    double rx_time; // Time of arrival of the packet
 };
 
 sync_long::sptr sync_long::make(unsigned int sync_length, bool log, bool debug)

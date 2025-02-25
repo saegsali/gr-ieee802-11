@@ -41,7 +41,8 @@ public:
           d_freq_offset(0),
           d_copied(0),
           MIN_PLATEAU(min_plateau),
-          d_threshold(threshold)
+          d_threshold(threshold),
+          d_sample_counter(0) // initialize sample counter
     {
         // disable tag propagation
         set_tag_propagation_policy(block::TPP_DONT);
@@ -92,7 +93,7 @@ public:
                         d_copied = 0;
                         d_freq_offset = arg(in_abs[i]) / 16;
                         d_plateau = 0;
-                        insert_tag(nitems_written(0), d_freq_offset, nitems_read(0) + i);
+                        insert_tag(nitems_written(0), d_freq_offset, nitems_read(0) + i, d_sample_counter);
                         dout << "SHORT Frame!" << std::endl;
                         break;
                     }
@@ -120,7 +121,7 @@ public:
                         d_freq_offset = arg(in_abs[o]) / 16;
                         // insert tag at the beginning of the frame with the estimated frequency offset
                         insert_tag(
-                            nitems_written(0) + o, d_freq_offset, nitems_read(0) + o);
+                            nitems_written(0) + o, d_freq_offset, nitems_read(0) + o, d_sample_counter);
                         dout << "SHORT Frame!" << std::endl;
                         break;
                     }
@@ -141,6 +142,8 @@ public:
             dout << "SHORT copied " << o << std::endl;
 
             consume_each(o);
+            // increment sample counter by the number of samples in the buffer
+            d_sample_counter += o;
             return o;
         }
         }
@@ -149,14 +152,20 @@ public:
         return 0;
     }
 
-    void insert_tag(uint64_t item, double freq_offset, uint64_t input_item)
+    void insert_tag(uint64_t item, double freq_offset, uint64_t input_item, uint64_t sample_counter)
     {
         mylog("frame start at in: {} out: {}", item, input_item);
 
+        // Tag for frequency offset
         const pmt::pmt_t key = pmt::string_to_symbol("wifi_start");
         const pmt::pmt_t value = pmt::from_double(freq_offset);
         const pmt::pmt_t srcid = pmt::string_to_symbol(name());
         add_item_tag(0, item, key, value, srcid);
+
+        // Tag for sample counter
+        const pmt::pmt_t key2 = pmt::string_to_symbol("sample_counter");
+        const pmt::pmt_t value2 = pmt::from_uint64(sample_counter);
+        add_item_tag(0, item, key2, value2, srcid);
     }
 
 private:
@@ -168,6 +177,8 @@ private:
     const bool d_log;
     const bool d_debug;
     const unsigned int MIN_PLATEAU;
+
+    uint64_t d_sample_counter; // Tracks the number of received samples
 };
 
 sync_short::sptr

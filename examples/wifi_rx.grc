@@ -541,7 +541,7 @@ blocks:
     bus_structure: null
     coordinate: [632, 1036.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: fft_vxx_0
   id: fft_vxx
   parameters:
@@ -1378,7 +1378,7 @@ blocks:
     sd_spec6: ''
     sd_spec7: ''
     show_lo_controls: 'False'
-    start_time: '0'
+    start_time: '-1.0'
     stream_args: ''
     stream_chans: '[]'
     sync: gps_time

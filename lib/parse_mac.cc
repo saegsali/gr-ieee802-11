@@ -65,22 +65,13 @@ public:
 
         mylog("length: {}",frame_len);
 
-        // std::vector<gr::tag_t> tags;
-        // get_tags_in_range(tags, 0, 0, frame_len);
+        std::vector<gr::tag_t> tags;
+        get_tags_in_range(tags, 0, 0, frame_len);
         // if (tags.size()) {
         //     // print value
         //     pmt::pmt_t value = tags.front().value;
         //     double packet_time = pmt::to_double(value);
         //     dout << "PACKET TIME: " << packet_time << std::endl;
-        // }
-        // pmt::pmt_t wifi_toa_tag;
-        // double wifi_toa = 0.0;
-        // for (const auto& tag : tags) {
-        //     if (pmt::symbol_to_string(tag.key) == "wifi_toa") {
-        //         wifi_toa_tag = tag.value;
-        //         wifi_toa = pmt::to_double(wifi_toa_tag);
-        //         dout << "WIFI TOA: " << wifi_toa << std::endl;
-        //     }
         // }
 
         dout << std::endl << "new mac frame  (length " << frame_len << ")" << std::endl;
@@ -91,6 +82,16 @@ public:
         }
 
         d_meta = pmt::dict_add(d_meta, pmt::mp("duration"), pmt::mp(h->duration));
+
+        pmt::pmt_t wifi_toa_tag;
+        double wifi_toa = 0.0;
+        for (const auto& tag : tags) {
+            if (pmt::symbol_to_string(tag.key) == "wifi_toa") {
+                wifi_toa_tag = tag.value;
+                wifi_toa = pmt::to_double(wifi_toa_tag);
+                dout << "WIFI TOA: " << wifi_toa << std::endl;
+            }
+        }
 
 #define HEX(a) std::hex << std::setfill('0') << std::setw(2) << int(a) << std::dec
         dout << "duration: " << HEX(h->duration >> 8) << " " << HEX(h->duration & 0xff)

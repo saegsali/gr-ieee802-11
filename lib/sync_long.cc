@@ -99,6 +99,7 @@ public:
         pmt::pmt_t rx_time_tag;
         uint64_t full_sec = 0;
         double frac_sec = 0.0;
+        double rx_time = 0.0;
 
         for (const auto& tag : d_tags) {
             if (pmt::symbol_to_string(tag.key) == "rx_time") {
@@ -115,6 +116,7 @@ public:
                             << "  Source: " << tag.srcid
                             << "  Key: rx_time"
                             << "  Value: {" << full_sec << " " << frac_sec << "}\n";
+                    rx_time = (double)full_sec + (double)frac_sec;
                 }
             }
         }

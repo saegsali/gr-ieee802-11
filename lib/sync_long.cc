@@ -104,10 +104,11 @@ public:
         for (const auto& tag : d_tags) {
             if (pmt::symbol_to_string(tag.key) == "rx_time") {
                 rx_time_tag = tag.value;
+                const pmt::pmt_t& value = tag.value;
                 
                 if (pmt::is_tuple(rx_time_tag) && pmt::length(rx_time_tag) == 2) {
-                    full_sec = pmt::to_uint64(pmt::tuple_ref(rx_time_tag, 0));
-                    frac_sec = pmt::to_double(pmt::tuple_ref(rx_time_tag, 1));
+                    full_sec = pmt::to_uint64(pmt::tuple_ref(value, 0));
+                    frac_sec = pmt::to_double(pmt::tuple_ref(value, 1));
 
                     // Print in the requested format
                     std::cout << "RX TIME (in sync_long)\n"

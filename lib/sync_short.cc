@@ -65,6 +65,17 @@ public:
         // dout << "SHORT noutput : " << noutput << " ninput: " << ninput_items[0] <<
         // std::endl;
 
+        // forward rx_time tag
+        std::vector<gr::tag_t> tags;
+        get_tags_in_window(tags, 0, 0, ninput, pmt::string_to_symbol("rx_time"));
+        if (tags.size()) {
+            add_item_tag(0,
+                            nitems_written(0),
+                            tags.front().key,
+                            tags.front().value,
+                            tags.front().srcid);
+        }
+        
         switch (d_state) {
 
         case SEARCH: {

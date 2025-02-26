@@ -277,3 +277,24 @@ void generate_bits(const char* psdu, char* data_bits, frame_param& frame)
         }
     }
 }
+
+// ---------- Own functions ----------
+
+void print_timestamp(double timestamp) {
+    // Split into integer and fractional seconds
+    time_t seconds = static_cast<time_t>(timestamp);
+    double fractional_seconds = timestamp - seconds;
+
+    // Convert to UTC time
+    struct tm tm_info;
+    if (gmtime_r(&seconds, &tm_info) == nullptr) {
+        std::cerr << "Error: Failed to convert timestamp!" << std::endl;
+        return;
+    }
+
+    // Print human-readable format
+    std::cout << "Packet Time (UTC): "
+              << std::put_time(&tm_info, "%Y-%m-%d %H:%M:%S")
+              << "." << std::fixed << std::setprecision(9) << fractional_seconds
+              << " UTC" << std::endl;
+}

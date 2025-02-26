@@ -229,7 +229,7 @@ blocks:
     alias: ''
     comment: ''
     detached: 'False'
-    file: /home/joel/kDrive/ETHZ/Semester_Project/GnuRadio/gr-ieee802-11/examples/recordings/wifi_20250218.txt
+    file: /home/pi/recording_2502.txt
     hdr_file: ''
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -290,14 +290,14 @@ blocks:
     alias: ''
     comment: ''
     en_uvec: 'True'
-    log_level: info
+    log_level: trace
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [240, 984.0]
+    coordinate: [368, 1008.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: blocks_moving_average_xx_0
   id: blocks_moving_average_xx
   parameters:
@@ -392,7 +392,7 @@ blocks:
     bus_structure: null
     coordinate: [1000, 660.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_tag_debug_0_0
   id: blocks_tag_debug
   parameters:
@@ -410,6 +410,25 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [728, 636.0]
+    rotation: 0
+    state: disabled
+- name: blocks_tag_debug_0_1
+  id: blocks_tag_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    display: 'True'
+    filter: '"rx_time"'
+    name: rx_time
+    num_inputs: '1'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [544, 388.0]
     rotation: 0
     state: disabled
 - name: blocks_throttle2_0
@@ -604,7 +623,7 @@ blocks:
     alias: ''
     comment: ''
     debug: 'False'
-    log: 'True'
+    log: 'False'
     maxoutbuf: '0'
     minoutbuf: '0'
   states:
@@ -703,23 +722,6 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1120, 12.0]
-    rotation: 0
-    state: true
-- name: parameter_0
-  id: parameter
-  parameters:
-    alias: ''
-    comment: ''
-    hide: none
-    label: ''
-    short_id: ''
-    type: ''
-    value: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1056, 320.0]
     rotation: 0
     state: true
 - name: pdu_pdu_to_tagged_stream_0
@@ -1063,8 +1065,8 @@ blocks:
     center_freq7: '0'
     center_freq8: '0'
     center_freq9: '0'
-    clock_rate: '0.0'
-    clock_source0: gpsdo
+    clock_rate: 0e0
+    clock_source0: ''
     clock_source1: ''
     clock_source2: ''
     clock_source3: ''
@@ -1436,7 +1438,8 @@ connections:
 - [uhd_usrp_source_0, '0', blocks_complex_to_mag_squared_0, '0']
 - [uhd_usrp_source_0, '0', blocks_delay_0_0, '0']
 - [uhd_usrp_source_0, '0', blocks_multiply_xx_0, '0']
+- [uhd_usrp_source_0, '0', blocks_tag_debug_0_1, '0']
 
 metadata:
   file_format: 1
-  grc_version: 3.10.7.0
+  grc_version: 3.10.12.0-rc1

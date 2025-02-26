@@ -9,7 +9,6 @@
 # GNU Radio version: 3.10.7.0
 
 from gnuradio import blocks
-from gnuradio import blocks, gr
 from gnuradio import fft
 from gnuradio.fft import window
 from gnuradio import gr
@@ -28,7 +27,7 @@ import ieee802_11
 
 class wifi_rx(gr.top_block):
 
-    def __init__(self, freq=2412000000, node=0, parameter_0=0, udp_ip_address='127.0.0.1', udp_port=5005):
+    def __init__(self, freq=2412000000, node=0, udp_ip_address='127.0.0.1', udp_port=5005):
         gr.top_block.__init__(self, "Wifi Rx", catch_exceptions=True)
 
         ##################################################
@@ -36,7 +35,6 @@ class wifi_rx(gr.top_block):
         ##################################################
         self.freq = freq
         self.node = node
-        self.parameter_0 = parameter_0
         self.udp_ip_address = udp_ip_address
         self.udp_port = udp_port
 
@@ -62,7 +60,6 @@ class wifi_rx(gr.top_block):
                 channels=list(range(0,1)),
             ),
         )
-        self.uhd_usrp_source_0.set_clock_source('gpsdo', 0)
         self.uhd_usrp_source_0.set_time_source('gpsdo', 0)
         self.uhd_usrp_source_0.set_samp_rate(samp_rate)
         # Set the time to GPS time on next PPS
@@ -78,13 +75,14 @@ class wifi_rx(gr.top_block):
         self.ieee802_11_sync_long_0 = ieee802_11.sync_long(sync_length, False, False)
         self.ieee802_11_parse_mac_0 = ieee802_11.parse_mac(False, True)
         self.ieee802_11_frame_equalizer_0 = ieee802_11.frame_equalizer(ieee802_11.Equalizer(chan_est), freq, samp_rate, False, False)
-        self.ieee802_11_decode_mac_0 = ieee802_11.decode_mac(True, False)
+        self.ieee802_11_decode_mac_0 = ieee802_11.decode_mac(False, False)
         self.fft_vxx_0 = fft.fft_vcc(64, True, window.rectangular(64), True, 1)
+        self.blocks_tag_debug_0 = blocks.tag_debug(gr.sizeof_gr_complex*64, 'wifi toa', "wifi_toa")
+        self.blocks_tag_debug_0.set_display(True)
         self.blocks_stream_to_vector_0 = blocks.stream_to_vector(gr.sizeof_gr_complex*1, 64)
         self.blocks_multiply_xx_0 = blocks.multiply_vcc(1)
         self.blocks_moving_average_xx_1 = blocks.moving_average_cc(window_size, 1, 4000, 1)
         self.blocks_moving_average_xx_0 = blocks.moving_average_ff((window_size  + 16), 1, 4000, 1)
-        self.blocks_message_debug_0 = blocks.message_debug(True, gr.log_levels.info)
         self.blocks_divide_xx_0 = blocks.divide_ff(1)
         self.blocks_delay_0_0 = blocks.delay(gr.sizeof_gr_complex*1, 16)
         self.blocks_delay_0 = blocks.delay(gr.sizeof_gr_complex*1, sync_length)
@@ -97,7 +95,6 @@ class wifi_rx(gr.top_block):
         # Connections
         ##################################################
         self.msg_connect((self.ieee802_11_decode_mac_0, 'out'), (self.ieee802_11_parse_mac_0, 'in'))
-        self.msg_connect((self.ieee802_11_parse_mac_0, 'out'), (self.blocks_message_debug_0, 'print'))
         self.connect((self.blocks_complex_to_mag_0, 0), (self.blocks_divide_xx_0, 0))
         self.connect((self.blocks_complex_to_mag_squared_0, 0), (self.blocks_moving_average_xx_0, 0))
         self.connect((self.blocks_conjugate_cc_0, 0), (self.blocks_multiply_xx_0, 1))
@@ -109,6 +106,7 @@ class wifi_rx(gr.top_block):
         self.connect((self.blocks_moving_average_xx_1, 0), (self.blocks_complex_to_mag_0, 0))
         self.connect((self.blocks_moving_average_xx_1, 0), (self.ieee802_11_sync_short_0, 1))
         self.connect((self.blocks_multiply_xx_0, 0), (self.blocks_moving_average_xx_1, 0))
+        self.connect((self.blocks_stream_to_vector_0, 0), (self.blocks_tag_debug_0, 0))
         self.connect((self.blocks_stream_to_vector_0, 0), (self.fft_vxx_0, 0))
         self.connect((self.fft_vxx_0, 0), (self.ieee802_11_frame_equalizer_0, 0))
         self.connect((self.ieee802_11_frame_equalizer_0, 0), (self.ieee802_11_decode_mac_0, 0))
@@ -133,12 +131,6 @@ class wifi_rx(gr.top_block):
 
     def set_node(self, node):
         self.node = node
-
-    def get_parameter_0(self):
-        return self.parameter_0
-
-    def set_parameter_0(self, parameter_0):
-        self.parameter_0 = parameter_0
 
     def get_udp_ip_address(self):
         return self.udp_ip_address

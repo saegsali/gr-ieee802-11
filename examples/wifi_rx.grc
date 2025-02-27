@@ -392,7 +392,7 @@ blocks:
     bus_structure: null
     coordinate: [1000, 660.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_tag_debug_0_0
   id: blocks_tag_debug
   parameters:
@@ -969,7 +969,7 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
-    ant0: ''
+    ant0: '"TX/RX"'
     ant1: ''
     ant10: ''
     ant11: ''
@@ -1066,7 +1066,7 @@ blocks:
     center_freq8: '0'
     center_freq9: '0'
     clock_rate: 0e0
-    clock_source0: ''
+    clock_source0: gpsdo
     clock_source1: ''
     clock_source2: ''
     clock_source3: ''
@@ -1442,4 +1442,4 @@ connections:
 
 metadata:
   file_format: 1
-  grc_version: 3.10.12.0-rc1
+  grc_version: 3.10.7.0

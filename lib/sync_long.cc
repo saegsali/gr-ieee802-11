@@ -175,7 +175,7 @@ public:
                     dout << "rx time: " << rx_time << std::endl;
                     dout << "Packet time: " << packet_time << std::endl;
 
-                    print_timestamp(packet_time);
+                    // print_timestamp(packet_time);
 
                     // Tagging the packet with Time of Arrival (ToA)
                     add_item_tag(0,

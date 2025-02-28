@@ -16,7 +16,7 @@ options:
     output_language: python
     placement: (0,0)
     qt_qss_theme: ''
-    realtime_scheduling: ''
+    realtime_scheduling: '1'
     run: 'True'
     run_command: '{python} -u {filename}'
     run_options: prompt
@@ -561,6 +561,52 @@ blocks:
     coordinate: [632, 1036.0]
     rotation: 0
     state: disabled
+- name: epy_block_2
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"\nEmbedded Python Blocks:\n\nEach time this file is saved,\
+      \ GRC will instantiate the first class it finds\nto get ports and parameters\
+      \ of your block. The arguments to __init__  will\nbe the parameters. All of\
+      \ them are required to have default values!\n\"\"\"\nimport pmt\nimport numpy\
+      \ as np\nfrom gnuradio import gr\n\nfrom datetime import datetime\n\n\n\nclass\
+      \ blk(gr.sync_block):  # other base classes are basic_block, decim_block, interp_block\n\
+      \    \"\"\"Embedded Python Block example - a simple multiply const\"\"\"\n\n\
+      \    def __init__(self, format_timestamp=True):  # only default arguments here\n\
+      \        \"\"\"arguments to this function show up as parameters in GRC\"\"\"\
+      \n        gr.sync_block.__init__(\n            self,\n            name='Print\
+      \ DroneID Packets',   # will show up in GRC\n            in_sig=None,\n    \
+      \        out_sig=None\n        )\n        # if an attribute with the same name\
+      \ as a parameter is found,\n        # a callback is registered (properties work,\
+      \ too).\n        self.format_timestamp = format_timestamp\n        self.message_port_register_in(gr.pmt.intern(\"\
+      in\"))\n        self.set_msg_handler(gr.pmt.intern(\"in\"), self.handle_msg)\n\
+      \        self.id = 0\n        \n    def handle_msg(self, msg):\n        msg\
+      \ = pmt.to_python(msg)\n        try:\n            mac_tx = [msg[0]['address\
+      \ 2'], msg[0]['address 1'], msg[0]['address 3']]\n            if \"e8:94:f6:09:ae:bd\"\
+      \ in mac_tx:\n                if self.format_timestamp is True:\n          \
+      \          timestamp = msg[0]['wifi_toa']\n                    seconds = int(timestamp)\
+      \  # Extract seconds\n                    nanoseconds = int((timestamp - seconds)\
+      \ * 1e9)  # Extract nanoseconds\n\n                    formatted_time = f\"\
+      {datetime.utcfromtimestamp(seconds).strftime('%Y-%m-%d %H:%M:%S')}.{nanoseconds:09d}\"\
+      \n\n                    print(f\"[{self.id}] DroneID Packet found: {formatted_time}\
+      \ - {msg[1]} {mac_tx}\")\n                else:\n                    print (f\"\
+      [{self.id}] DroneID Packet found: {msg[0]['wifi_toa']:.9f} - {msg[1]} {mac_tx}\"\
+      )\n                    self.id = self.id + 1\n        except:\n            pass\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    format_timestamp: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    _io_cache: ('Print DroneID Packets', 'blk', [('format_timestamp', 'True')], [('in',
+      'message', 1)], [], 'Embedded Python Block example - a simple multiply const',
+      ['format_timestamp'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [800, 1076.0]
+    rotation: 0
+    state: true
 - name: fft_vxx_0
   id: fft_vxx
   parameters:
@@ -571,7 +617,7 @@ blocks:
     forward: 'True'
     maxoutbuf: '0'
     minoutbuf: '0'
-    nthreads: '1'
+    nthreads: '4'
     shift: 'True'
     type: complex
     window: window.rectangular(64)
@@ -659,7 +705,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    debug: 'True'
+    debug: 'False'
     log: 'False'
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -1430,6 +1476,7 @@ connections:
 - [ieee802_11_frame_equalizer_0, symbols, pdu_pdu_to_tagged_stream_0, pdus]
 - [ieee802_11_parse_mac_0, out, blocks_message_debug_0, print]
 - [ieee802_11_parse_mac_0, out, epy_block_1, in]
+- [ieee802_11_parse_mac_0, out, epy_block_2, in]
 - [ieee802_11_sync_long_0, '0', blocks_stream_to_vector_0, '0']
 - [ieee802_11_sync_long_0, '0', epy_block_0, '0']
 - [ieee802_11_sync_short_0, '0', blocks_delay_0, '0']

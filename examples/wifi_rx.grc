@@ -571,34 +571,34 @@ blocks:
       \ as np\nfrom gnuradio import gr\n\nfrom datetime import datetime\n\n\n\nclass\
       \ blk(gr.sync_block):  # other base classes are basic_block, decim_block, interp_block\n\
       \    \"\"\"Embedded Python Block example - a simple multiply const\"\"\"\n\n\
-      \    def __init__(self, format_timestamp=True):  # only default arguments here\n\
+      \    def __init__(self, format_timestamp=1):  # only default arguments here\n\
       \        \"\"\"arguments to this function show up as parameters in GRC\"\"\"\
       \n        gr.sync_block.__init__(\n            self,\n            name='Print\
       \ DroneID Packets',   # will show up in GRC\n            in_sig=None,\n    \
       \        out_sig=None\n        )\n        # if an attribute with the same name\
       \ as a parameter is found,\n        # a callback is registered (properties work,\
-      \ too).\n        self.format_timestamp = format_timestamp\n        self.message_port_register_in(gr.pmt.intern(\"\
+      \ too).\n        self.format_timestamp = int(format_timestamp)\n        self.message_port_register_in(gr.pmt.intern(\"\
       in\"))\n        self.set_msg_handler(gr.pmt.intern(\"in\"), self.handle_msg)\n\
       \        self.id = 0\n        \n    def handle_msg(self, msg):\n        msg\
       \ = pmt.to_python(msg)\n        try:\n            mac_tx = [msg[0]['address\
       \ 2'], msg[0]['address 1'], msg[0]['address 3']]\n            if \"e8:94:f6:09:ae:bd\"\
-      \ in mac_tx:\n                if self.format_timestamp is True:\n          \
-      \          timestamp = msg[0]['wifi_toa']\n                    seconds = int(timestamp)\
+      \ in mac_tx:\n                if self.format_timestamp == 1:\n             \
+      \       timestamp = msg[0]['wifi_toa']\n                    seconds = int(timestamp)\
       \  # Extract seconds\n                    nanoseconds = int((timestamp - seconds)\
       \ * 1e9)  # Extract nanoseconds\n\n                    formatted_time = f\"\
       {datetime.utcfromtimestamp(seconds).strftime('%Y-%m-%d %H:%M:%S')}.{nanoseconds:09d}\"\
       \n\n                    print(f\"[{self.id}] DroneID Packet found: {formatted_time}\
       \ - {msg[1]} {mac_tx}\")\n                else:\n                    print (f\"\
       [{self.id}] DroneID Packet found: {msg[0]['wifi_toa']:.9f} - {msg[1]} {mac_tx}\"\
-      )\n                    self.id = self.id + 1\n        except:\n            pass\n"
+      )\n            self.id = self.id + 1\n        except:\n            pass\n"
     affinity: ''
     alias: ''
     comment: ''
-    format_timestamp: 'True'
+    format_timestamp: '1'
     maxoutbuf: '0'
     minoutbuf: '0'
   states:
-    _io_cache: ('Print DroneID Packets', 'blk', [('format_timestamp', 'True')], [('in',
+    _io_cache: ('Print DroneID Packets', 'blk', [('format_timestamp', '1')], [('in',
       'message', 1)], [], 'Embedded Python Block example - a simple multiply const',
       ['format_timestamp'])
     bus_sink: false

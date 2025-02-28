@@ -16,7 +16,7 @@ from datetime import datetime
 class blk(gr.sync_block):  # other base classes are basic_block, decim_block, interp_block
     """Embedded Python Block example - a simple multiply const"""
 
-    def __init__(self, format_timestamp=True):  # only default arguments here
+    def __init__(self, format_timestamp=1):  # only default arguments here
         """arguments to this function show up as parameters in GRC"""
         gr.sync_block.__init__(
             self,
@@ -26,7 +26,7 @@ class blk(gr.sync_block):  # other base classes are basic_block, decim_block, in
         )
         # if an attribute with the same name as a parameter is found,
         # a callback is registered (properties work, too).
-        self.format_timestamp = format_timestamp
+        self.format_timestamp = int(format_timestamp)
         self.message_port_register_in(gr.pmt.intern("in"))
         self.set_msg_handler(gr.pmt.intern("in"), self.handle_msg)
         self.id = 0
@@ -36,7 +36,7 @@ class blk(gr.sync_block):  # other base classes are basic_block, decim_block, in
         try:
             mac_tx = [msg[0]['address 2'], msg[0]['address 1'], msg[0]['address 3']]
             if "e8:94:f6:09:ae:bd" in mac_tx:
-                if self.format_timestamp is True:
+                if self.format_timestamp == 1:
                     timestamp = msg[0]['wifi_toa']
                     seconds = int(timestamp)  # Extract seconds
                     nanoseconds = int((timestamp - seconds) * 1e9)  # Extract nanoseconds
@@ -46,6 +46,6 @@ class blk(gr.sync_block):  # other base classes are basic_block, decim_block, in
                     print(f"[{self.id}] DroneID Packet found: {formatted_time} - {msg[1]} {mac_tx}")
                 else:
                     print (f"[{self.id}] DroneID Packet found: {msg[0]['wifi_toa']:.9f} - {msg[1]} {mac_tx}")
-                    self.id = self.id + 1
+            self.id = self.id + 1
         except:
             pass

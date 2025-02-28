@@ -80,7 +80,7 @@ class wifi_rx(gr.top_block):
         self.ieee802_11_frame_equalizer_0 = ieee802_11.frame_equalizer(ieee802_11.Equalizer(chan_est), freq, samp_rate, False, False)
         self.ieee802_11_decode_mac_0 = ieee802_11.decode_mac(False, False)
         self.fft_vxx_0 = fft.fft_vcc(64, True, window.rectangular(64), True, 4)
-        self.epy_block_2 = epy_block_2.blk(format_timestamp=True)
+        self.epy_block_2 = epy_block_2.blk(format_timestamp=1)
         self.blocks_stream_to_vector_0 = blocks.stream_to_vector(gr.sizeof_gr_complex*1, 64)
         self.blocks_multiply_xx_0 = blocks.multiply_vcc(1)
         self.blocks_moving_average_xx_1 = blocks.moving_average_cc(window_size, 1, 4000, 1)

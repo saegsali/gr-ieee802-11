@@ -6,7 +6,7 @@
 #
 # GNU Radio Python Flow Graph
 # Title: Wifi Rx
-# GNU Radio version: 3.10.7.0
+# GNU Radio version: 3.10.12.0-rc1
 
 from gnuradio import blocks
 from gnuradio import fft
@@ -21,6 +21,7 @@ from gnuradio import eng_notation
 from gnuradio import uhd
 import time
 import ieee802_11
+import threading
 import wifi_rx_epy_block_2 as epy_block_2  # embedded python block
 
 
@@ -30,6 +31,7 @@ class wifi_rx(gr.top_block):
 
     def __init__(self, freq=2412000000, node=0, udp_ip_address='127.0.0.1', udp_port=5005):
         gr.top_block.__init__(self, "Wifi Rx", catch_exceptions=True)
+        self.flowgraph_started = threading.Event()
 
         ##################################################
         # Parameters
@@ -81,6 +83,8 @@ class wifi_rx(gr.top_block):
         self.ieee802_11_decode_mac_0 = ieee802_11.decode_mac(False, False)
         self.fft_vxx_0 = fft.fft_vcc(64, True, window.rectangular(64), True, 4)
         self.epy_block_2 = epy_block_2.blk(format_timestamp=1)
+        self.blocks_tag_debug_0_1 = blocks.tag_debug(gr.sizeof_gr_complex*1, 'rx_time', "rx_time")
+        self.blocks_tag_debug_0_1.set_display(True)
         self.blocks_stream_to_vector_0 = blocks.stream_to_vector(gr.sizeof_gr_complex*1, 64)
         self.blocks_multiply_xx_0 = blocks.multiply_vcc(1)
         self.blocks_moving_average_xx_1 = blocks.moving_average_cc(window_size, 1, 4000, 1)
@@ -118,6 +122,7 @@ class wifi_rx(gr.top_block):
         self.connect((self.uhd_usrp_source_0, 0), (self.blocks_complex_to_mag_squared_0, 0))
         self.connect((self.uhd_usrp_source_0, 0), (self.blocks_delay_0_0, 0))
         self.connect((self.uhd_usrp_source_0, 0), (self.blocks_multiply_xx_0, 0))
+        self.connect((self.uhd_usrp_source_0, 0), (self.blocks_tag_debug_0_1, 0))
 
 
     def get_freq(self):
@@ -213,7 +218,7 @@ def main(top_block_cls=wifi_rx, options=None):
     if options is None:
         options = argument_parser().parse_args()
     if gr.enable_realtime_scheduling() != gr.RT_OK:
-        gr.logger("realtime").warning("Error: failed to enable real-time scheduling.")
+        gr.logger("realtime").warn("Error: failed to enable real-time scheduling.")
     tb = top_block_cls(freq=options.freq, node=options.node, udp_ip_address=options.udp_ip_address, udp_port=options.udp_port)
 
     def sig_handler(sig=None, frame=None):
@@ -226,6 +231,7 @@ def main(top_block_cls=wifi_rx, options=None):
     signal.signal(signal.SIGTERM, sig_handler)
 
     tb.start()
+    tb.flowgraph_started.set()
 
     try:
         input('Press Enter to quit: ')

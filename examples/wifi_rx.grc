@@ -430,6 +430,25 @@ blocks:
     bus_structure: null
     coordinate: [544, 388.0]
     rotation: 0
+    state: enabled
+- name: blocks_tag_debug_1
+  id: blocks_tag_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    display: 'True'
+    filter: '"sample_counter"'
+    name: sample counter
+    num_inputs: '1'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [520, 604.0]
+    rotation: 0
     state: disabled
 - name: blocks_throttle2_0
   id: blocks_throttle2
@@ -568,29 +587,32 @@ blocks:
       \ GRC will instantiate the first class it finds\nto get ports and parameters\
       \ of your block. The arguments to __init__  will\nbe the parameters. All of\
       \ them are required to have default values!\n\"\"\"\nimport pmt\nimport numpy\
-      \ as np\nfrom gnuradio import gr\n\nfrom datetime import datetime\n\n\n\nclass\
-      \ blk(gr.sync_block):  # other base classes are basic_block, decim_block, interp_block\n\
-      \    \"\"\"Embedded Python Block example - a simple multiply const\"\"\"\n\n\
-      \    def __init__(self, format_timestamp=1):  # only default arguments here\n\
-      \        \"\"\"arguments to this function show up as parameters in GRC\"\"\"\
-      \n        gr.sync_block.__init__(\n            self,\n            name='Print\
-      \ DroneID Packets',   # will show up in GRC\n            in_sig=None,\n    \
-      \        out_sig=None\n        )\n        # if an attribute with the same name\
-      \ as a parameter is found,\n        # a callback is registered (properties work,\
-      \ too).\n        self.format_timestamp = int(format_timestamp)\n        self.message_port_register_in(gr.pmt.intern(\"\
+      \ as np\nfrom gnuradio import gr\n\nimport datetime\n\n\n\nclass blk(gr.sync_block):\
+      \  # other base classes are basic_block, decim_block, interp_block\n    \"\"\
+      \"Embedded Python Block example - a simple multiply const\"\"\"\n\n    def __init__(self,\
+      \ format_timestamp=1):  # only default arguments here\n        \"\"\"arguments\
+      \ to this function show up as parameters in GRC\"\"\"\n        gr.sync_block.__init__(\n\
+      \            self,\n            name='Print DroneID Packets',   # will show\
+      \ up in GRC\n            in_sig=None,\n            out_sig=None\n        )\n\
+      \        # if an attribute with the same name as a parameter is found,\n   \
+      \     # a callback is registered (properties work, too).\n        self.format_timestamp\
+      \ = int(format_timestamp)\n        self.message_port_register_in(gr.pmt.intern(\"\
       in\"))\n        self.set_msg_handler(gr.pmt.intern(\"in\"), self.handle_msg)\n\
       \        self.id = 0\n        \n    def handle_msg(self, msg):\n        msg\
       \ = pmt.to_python(msg)\n        try:\n            mac_tx = [msg[0]['address\
       \ 2'], msg[0]['address 1'], msg[0]['address 3']]\n            if \"e8:94:f6:09:ae:bd\"\
       \ in mac_tx:\n                if self.format_timestamp == 1:\n             \
-      \       timestamp = msg[0]['wifi_toa']\n                    seconds = int(timestamp)\
-      \  # Extract seconds\n                    nanoseconds = int((timestamp - seconds)\
-      \ * 1e9)  # Extract nanoseconds\n\n                    formatted_time = f\"\
+      \       #timestamp = msg[0]['wifi_toa']\n                    #seconds = int(timestamp)\
+      \  # Extract seconds\n                    #nanoseconds = int((timestamp - seconds)\
+      \ * 1e9)  # Extract nanoseconds\n\n                    #formatted_time = f\"\
       {datetime.utcfromtimestamp(seconds).strftime('%Y-%m-%d %H:%M:%S')}.{nanoseconds:09d}\"\
-      \n\n                    print(f\"[{self.id}] DroneID Packet found: {formatted_time}\
-      \ - {msg[1]} {mac_tx}\")\n                else:\n                    print (f\"\
+      \n                    timestamp = msg[0]['wifi_toa']\n                    dt\
+      \ = datetime.datetime.utcfromtimestamp(timestamp)\n                    formatted_time\
+      \ = dt.strftime('%Y-%m-%d %H:%M:%S.%f')  # Microseconds included\n\n       \
+      \             print(f\"[{self.id}] DroneID Packet found: {formatted_time} -\
+      \ {msg[1]} {mac_tx}\")\n                else:\n                    print (f\"\
       [{self.id}] DroneID Packet found: {msg[0]['wifi_toa']:.9f} - {msg[1]} {mac_tx}\"\
-      )\n            self.id = self.id + 1\n        except:\n            pass\n"
+      )\n                self.id = self.id + 1\n        except:\n            pass\n"
     affinity: ''
     alias: ''
     comment: ''
@@ -1443,7 +1465,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [32, 156.0]
+    coordinate: [40, 196.0]
     rotation: 0
     state: enabled
 
@@ -1480,6 +1502,7 @@ connections:
 - [ieee802_11_sync_long_0, '0', blocks_stream_to_vector_0, '0']
 - [ieee802_11_sync_long_0, '0', epy_block_0, '0']
 - [ieee802_11_sync_short_0, '0', blocks_delay_0, '0']
+- [ieee802_11_sync_short_0, '0', blocks_tag_debug_1, '0']
 - [ieee802_11_sync_short_0, '0', ieee802_11_sync_long_0, '0']
 - [pdu_pdu_to_tagged_stream_0, '0', qtgui_const_sink_x_0, '0']
 - [uhd_usrp_source_0, '0', blocks_complex_to_mag_squared_0, '0']
@@ -1489,4 +1512,4 @@ connections:
 
 metadata:
   file_format: 1
-  grc_version: 3.10.7.0
+  grc_version: 3.10.12.0-rc1

@@ -173,9 +173,11 @@ public:
                     // Compute packet arrival time
                     double packet_time = rx_time + (((double)d_sample_counter+ d_freq_offset_short - d_freq_offset) / 20e6); // sr = 20e6
                     dout << "rx time: " << rx_time << std::endl;
-                    dout << "Packet time: " << packet_time << std::endl;
+                    dout << "rest: " << (((double)d_sample_counter + d_freq_offset_short - d_freq_offset) / 20e6) << std::endl;
+                    dout << "sc: " << (((double)d_sample_counter) / 20e6) << std::endl;
+                    dout << "Packet time: " << std::fixed << std::setprecision(9) << packet_time << std::endl;
 
-                    // print_timestamp(packet_time);
+                    //print_timestamp(packet_time);
 
                     // Tagging the packet with Time of Arrival (ToA)
                     add_item_tag(0,
@@ -226,7 +228,6 @@ public:
         consume(0, i);
         consume(1, i);
 
-        // increment sample counter by the number of samples in the buffer
         return o;
     }
 

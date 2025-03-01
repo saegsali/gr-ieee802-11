@@ -89,8 +89,12 @@ public:
 
                 // Enter tags into metadata dictionary
                 d_meta = pmt::make_dict();
-                for (auto tag : tags)
+                for (auto tag : tags){
                     d_meta = pmt::dict_add(d_meta, tag.key, tag.value);
+                    // if (pmt::symbol_to_string(tag.key) == "wifi_toa") {
+                    //     print_timestamp(pmt::to_double(tag.value));
+                    // }
+                }
 
                 int len_data = pmt::to_uint64(pmt::dict_ref(
                     d_meta, pmt::mp("frame bytes"), pmt::from_uint64(MAX_PSDU_SIZE + 1)));
@@ -169,29 +173,6 @@ public:
         pmt::pmt_t blob = pmt::make_blob(out_bytes + 2, d_frame.psdu_size - 4);
         d_meta =
             pmt::dict_add(d_meta, pmt::mp("dlt"), pmt::from_long(LINKTYPE_IEEE802_11));
-
-        // add wifi_toa tag to d_meta
-        std::vector<gr::tag_t> tags;
-        get_tags_in_range(tags, 0, 0, d_frame.psdu_size);
-        if (tags.size()) {
-            for (const auto& tag : tags) {
-                if (pmt::symbol_to_string(tag.key) == "wifi_toa") {
-                    d_meta = pmt::dict_add(d_meta, pmt::mp("wifi_toa"), tag.value);
-                }
-            }
-        }
-
-        // if (d_debug) {
-        //             pmt::pmt_t wifi_toa_tag;
-        //             double wifi_toa = 0.0;
-        //             for (const auto& tag : tags) {
-        //                 if (pmt::symbol_to_string(tag.key) == "wifi_toa") {
-        //                     wifi_toa_tag = tag.value;
-        //                     wifi_toa = pmt::to_double(wifi_toa_tag);
-        //                     dout << "WIFI TOA: " << wifi_toa << std::endl;
-        //                 }
-        //             }
-        //         }
 
         message_port_pub(pmt::mp("out"), pmt::cons(d_meta, blob));
     }

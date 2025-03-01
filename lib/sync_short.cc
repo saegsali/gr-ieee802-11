@@ -70,6 +70,7 @@ public:
         std::vector<gr::tag_t> tags;
         get_tags_in_window(tags, 0, 0, ninput, pmt::string_to_symbol("rx_time"));
         if (tags.size()) {
+            d_sample_counter = 0;
             add_item_tag(0,
                             nitems_written(0),
                             tags.front().key,
@@ -101,7 +102,7 @@ public:
                     d_plateau = 0;
                 }
             }
-
+            d_sample_counter += i;
             consume_each(i);
             return 0;
         }
@@ -142,8 +143,8 @@ public:
             dout << "SHORT copied " << o << std::endl;
 
             consume_each(o);
-            // increment sample counter by the number of samples in the buffer
             d_sample_counter += o;
+            dout << "samples/sample_rate: " << ((double)d_sample_counter)/(20e6) << std::endl;
             return o;
         }
         }

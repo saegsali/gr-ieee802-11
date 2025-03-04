@@ -137,7 +137,6 @@ int frame_equalizer_impl::general_work(int noutput_items,
         get_tags_in_window(tags, 0, i, i + 1, pmt::string_to_symbol("wifi_start"));
         // get_tags_in_window(tags, 0, i, i + 1, pmt::string_to_symbol("wifi_toa"));
 
-        // TODO: get ToA here??
         // new frame
         if (tags.size()) {
             d_current_symbol = 0;

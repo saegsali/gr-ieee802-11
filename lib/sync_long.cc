@@ -113,13 +113,6 @@ public:
                         full_sec = pmt::to_uint64(pmt::tuple_ref(value, 0));
                         frac_sec = pmt::to_double(pmt::tuple_ref(value, 1));
 
-                        // Print in the requested format
-                        // std::cout << "RX TIME (in sync_long)\n"
-                        //         << "Input Stream: 00\n"
-                        //         << "  Offset: " << tag.offset
-                        //         << "  Source: " << tag.srcid
-                        //         << "  Key: rx_time"
-                        //         << "  Value: {" << full_sec << " " << frac_sec << "}\n";
                         rx_time = (double)full_sec + frac_sec;
                     }   
                 }
@@ -171,11 +164,11 @@ public:
 
                 if (!rel) {
                     // Compute packet arrival time
-                    double packet_time = rx_time + (((double)d_sample_counter+ d_freq_offset_short - d_freq_offset) / 20e6); // sr = 20e6
-                    dout << "rx time: " << rx_time << std::endl;
-                    dout << "rest: " << (((double)d_sample_counter + d_freq_offset_short - d_freq_offset) / 20e6) << std::endl;
-                    dout << "sc: " << (((double)d_sample_counter) / 20e6) << std::endl;
-                    dout << "Packet time: " << std::fixed << std::setprecision(9) << packet_time << std::endl;
+                    double packet_time = rx_time + (((double)d_sample_counter + d_frame_start) / 20e6); // sr = 20e6
+                    // dout << "rx time: " << rx_time << std::endl;
+                    // dout << "rest: " << (((double)d_sample_counter + d_freq_offset_short - d_freq_offset) / 20e6) << std::endl;
+                    // dout << "sc: " << (((double)d_sample_counter) / 20e6) << std::endl;
+                    // dout << "Packet time: " << std::fixed << std::setprecision(9) << packet_time << std::endl;
 
                     //print_timestamp(packet_time);
 
@@ -309,8 +302,8 @@ private:
     static const std::vector<gr_complex> LONG;
 
 
-    uint64_t d_sample_counter; // Tracks the number of received samples
-    double rx_time; // Time of arrival of the packet
+    uint64_t d_sample_counter; // Sample counter. Gets incremented in sync_short block
+    double rx_time; // Time, when the first sample arrived
 };
 
 sync_long::sptr sync_long::make(unsigned int sync_length, bool log, bool debug)

@@ -142,9 +142,8 @@ public:
 
             dout << "SHORT copied " << o << std::endl;
 
-            consume_each(o);
             d_sample_counter += o;
-            dout << "samples/sample_rate: " << ((double)d_sample_counter)/(20e6) << std::endl;
+            consume_each(o);
             return o;
         }
         }

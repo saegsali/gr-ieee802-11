@@ -602,15 +602,15 @@ blocks:
       \ = pmt.to_python(msg)\n        try:\n            mac_tx = [msg[0]['address\
       \ 2'], msg[0]['address 1'], msg[0]['address 3']]\n            if \"e8:94:f6:09:ae:bd\"\
       \ in mac_tx:\n                if self.format_timestamp == 1:\n             \
-      \       #timestamp = msg[0]['wifi_toa']\n                    #seconds = int(timestamp)\
-      \  # Extract seconds\n                    #nanoseconds = int((timestamp - seconds)\
-      \ * 1e9)  # Extract nanoseconds\n\n                    #formatted_time = f\"\
-      {datetime.utcfromtimestamp(seconds).strftime('%Y-%m-%d %H:%M:%S')}.{nanoseconds:09d}\"\
-      \n                    timestamp = msg[0]['wifi_toa']\n                    dt\
-      \ = datetime.datetime.utcfromtimestamp(timestamp)\n                    formatted_time\
-      \ = dt.strftime('%Y-%m-%d %H:%M:%S.%f')  # Microseconds included\n\n       \
-      \             print(f\"[{self.id}] DroneID Packet found: {formatted_time} -\
-      \ {msg[1]} {mac_tx}\")\n                else:\n                    print (f\"\
+      \       timestamp = msg[0]['wifi_toa']\n                    seconds = int(timestamp)\
+      \  # Extract seconds\n                    nanoseconds = int((timestamp - seconds)\
+      \ * 1e9)  # Extract nanoseconds\n\n                    formatted_time = f\"\
+      {datetime.datetime.utcfromtimestamp(seconds).strftime('%Y-%m-%d %H:%M:%S')}.{nanoseconds:09d}\"\
+      \n                    # timestamp = msg[0]['wifi_toa']\n                   \
+      \ # dt = datetime.datetime.utcfromtimestamp(timestamp)\n                   \
+      \ # formatted_time = dt.strftime('%Y-%m-%d %H:%M:%S.%f')  # Microseconds included\n\
+      \n                    print(f\"[{self.id}] DroneID Packet found: {formatted_time}\
+      \ - {msg[1]} {mac_tx}\")\n                else:\n                    print (f\"\
       [{self.id}] DroneID Packet found: {msg[0]['wifi_toa']:.9f} - {msg[1]} {mac_tx}\"\
       )\n                self.id = self.id + 1\n        except:\n            pass\n"
     affinity: ''
@@ -1512,4 +1512,4 @@ connections:
 
 metadata:
   file_format: 1
-  grc_version: 3.10.12.0-rc1
+  grc_version: 3.10.7.0

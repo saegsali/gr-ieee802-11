@@ -21,7 +21,7 @@ from gnuradio import eng_notation
 from gnuradio import uhd
 import time
 import ieee802_11
-import wifi_rx_epy_block_2 as epy_block_2  # embedded python block
+import wifi_rx_epy_block_1 as epy_block_1  # embedded python block
 
 
 
@@ -61,15 +61,8 @@ class wifi_rx(gr.top_block):
                 channels=list(range(0,1)),
             ),
         )
-        self.uhd_usrp_source_0.set_clock_source('gpsdo', 0)
-        self.uhd_usrp_source_0.set_time_source('gpsdo', 0)
         self.uhd_usrp_source_0.set_samp_rate(samp_rate)
-        # Set the time to GPS time on next PPS
-        # get_mboard_sensor("gps_time") returns just after the PPS edge,
-        # thus add one second and set the time on the next PPS
-        self.uhd_usrp_source_0.set_time_next_pps(uhd.time_spec(self.uhd_usrp_source_0.get_mboard_sensor("gps_time").to_int() + 1.0))
-        # Sleep 1 second to ensure next PPS has come
-        time.sleep(1)
+        self.uhd_usrp_source_0.set_time_unknown_pps(uhd.time_spec(0))
 
         self.uhd_usrp_source_0.set_center_freq(uhd.tune_request(freq, rf_freq = freq - lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
         self.uhd_usrp_source_0.set_antenna("TX/RX", 0)
@@ -80,9 +73,7 @@ class wifi_rx(gr.top_block):
         self.ieee802_11_frame_equalizer_0 = ieee802_11.frame_equalizer(ieee802_11.Equalizer(chan_est), freq, samp_rate, False, False)
         self.ieee802_11_decode_mac_0 = ieee802_11.decode_mac(False, False)
         self.fft_vxx_0 = fft.fft_vcc(64, True, window.rectangular(64), True, 4)
-        self.epy_block_2 = epy_block_2.blk(format_timestamp=1)
-        self.blocks_tag_debug_0_1 = blocks.tag_debug(gr.sizeof_gr_complex*1, 'rx_time', "rx_time")
-        self.blocks_tag_debug_0_1.set_display(True)
+        self.epy_block_1 = epy_block_1.udp_sender(host=udp_ip_address, port=udp_port, node_id=0)
         self.blocks_stream_to_vector_0 = blocks.stream_to_vector(gr.sizeof_gr_complex*1, 64)
         self.blocks_multiply_xx_0 = blocks.multiply_vcc(1)
         self.blocks_moving_average_xx_1 = blocks.moving_average_cc(window_size, 1, 4000, 1)
@@ -99,7 +90,7 @@ class wifi_rx(gr.top_block):
         # Connections
         ##################################################
         self.msg_connect((self.ieee802_11_decode_mac_0, 'out'), (self.ieee802_11_parse_mac_0, 'in'))
-        self.msg_connect((self.ieee802_11_parse_mac_0, 'out'), (self.epy_block_2, 'in'))
+        self.msg_connect((self.ieee802_11_parse_mac_0, 'out'), (self.epy_block_1, 'in'))
         self.connect((self.blocks_complex_to_mag_0, 0), (self.blocks_divide_xx_0, 0))
         self.connect((self.blocks_complex_to_mag_squared_0, 0), (self.blocks_moving_average_xx_0, 0))
         self.connect((self.blocks_conjugate_cc_0, 0), (self.blocks_multiply_xx_0, 1))
@@ -120,7 +111,6 @@ class wifi_rx(gr.top_block):
         self.connect((self.uhd_usrp_source_0, 0), (self.blocks_complex_to_mag_squared_0, 0))
         self.connect((self.uhd_usrp_source_0, 0), (self.blocks_delay_0_0, 0))
         self.connect((self.uhd_usrp_source_0, 0), (self.blocks_multiply_xx_0, 0))
-        self.connect((self.uhd_usrp_source_0, 0), (self.blocks_tag_debug_0_1, 0))
 
 
     def get_freq(self):
@@ -142,12 +132,14 @@ class wifi_rx(gr.top_block):
 
     def set_udp_ip_address(self, udp_ip_address):
         self.udp_ip_address = udp_ip_address
+        self.epy_block_1.host = self.udp_ip_address
 
     def get_udp_port(self):
         return self.udp_port
 
     def set_udp_port(self, udp_port):
         self.udp_port = udp_port
+        self.epy_block_1.port = self.udp_port
 
     def get_window_size(self):
         return self.window_size

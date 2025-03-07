@@ -551,7 +551,7 @@ blocks:
     host: udp_ip_address
     maxoutbuf: '0'
     minoutbuf: '0'
-    node_id: '0'
+    node_id: node
     port: udp_port
   states:
     _io_cache: ('udp_sender', 'udp_sender', [('host', "'127.0.0.1'"), ('port', '5005'),
@@ -1496,4 +1496,4 @@ connections:
 
 metadata:
   file_format: 1
-  grc_version: 3.10.12.0-rc1
+  grc_version: 3.10.7.0

@@ -51,7 +51,7 @@ public:
           d_sample_counter(0),
           rx_time(0.0),
           rx_time_sec(0),
-          rx_time_frac(0)
+          rx_time_frac(0.0)
     {
         // disable tag propagation
         set_tag_propagation_policy(block::TPP_DONT);
@@ -169,24 +169,24 @@ public:
                 if (!rel) {
                     // Compute packet arrival time
                     // Compute extra time from the sample counter (in seconds)
-                    double extra_time = (((double)d_sample_counter + d_frame_start) / 20e6);
+                    double extra_time = ((double)(d_sample_counter + d_frame_start)) / 20e6;
                     uint64_t extra_sec = (uint64_t)(extra_time);
-                    uint64_t extra_nsec = (uint64_t)((extra_time - extra_sec) * 1e9);
+                    double extra_frac = (extra_time - extra_sec);
                     
                     // Compute the complete packet time by adding the extra time to the rx_time parts
                     uint64_t packet_sec = rx_time_sec + extra_sec;
-                    uint64_t packet_nsec = rx_time_frac + extra_nsec;
-                    if (packet_nsec >= 1000000000) {
+                    double packet_frac = rx_time_frac + extra_frac;
+                    if (packet_frac >= 1.0) {
                         packet_sec += 1;
-                        packet_nsec -= 1000000000;
+                        packet_frac -= 1.0;
                     }
-                    pmt::pmt_t packet_time = pmt::make_tuple(pmt::from_uint64(packet_sec), pmt::from_uint64(packet_nsec));
+                    pmt::pmt_t packet_time = pmt::make_tuple(pmt::from_uint64(packet_sec), pmt::from_double(packet_frac));
 
-                    // double packet_time = rx_time + ((double)(d_sample_counter + d_frame_start) / 20e6); // sr = 20e6
-                    // dout << "rx time: " << rx_time << std::endl;
-                    // dout << "rest: " << (((double)d_sample_counter + d_freq_offset_short - d_freq_offset) / 20e6) << std::endl;
-                    // dout << "sc: " << (((double)d_sample_counter) / 20e6) << std::endl;
-                    // dout << "Packet time: " << std::fixed << std::setprecision(9) << packet_time << std::endl;
+                    // Debug Output
+                    std::cout << std::fixed << std::setprecision(9);
+                    std::cout << "RX Time: " << rx_time_sec << " + " << rx_time_frac << std::endl;
+                    std::cout << "Extra Time: " << extra_sec << " + " << extra_frac << std::endl;
+                    std::cout << "Final Packet Time: " << packet_sec << " + " << packet_frac << std::endl;
 
                     //print_timestamp(packet_time);
 
@@ -324,7 +324,7 @@ private:
     
     double rx_time; // Time, when the first sample arrived
     uint64_t rx_time_sec;
-    uint64_t rx_time_frac;
+    double rx_time_frac;
 };
 
 sync_long::sptr sync_long::make(unsigned int sync_length, bool log, bool debug)

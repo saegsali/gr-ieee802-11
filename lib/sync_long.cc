@@ -183,10 +183,10 @@ public:
                     pmt::pmt_t packet_time = pmt::make_tuple(pmt::from_uint64(packet_sec), pmt::from_double(packet_frac));
 
                     // Debug Output
-                    std::cout << std::fixed << std::setprecision(9);
-                    std::cout << "RX Time: " << rx_time_sec << " + " << rx_time_frac << std::endl;
-                    std::cout << "Extra Time: " << extra_sec << " + " << extra_frac << std::endl;
-                    std::cout << "Final Packet Time: " << packet_sec << " + " << packet_frac << std::endl;
+                    dout << std::fixed << std::setprecision(9);
+                    dout << "RX Time: " << rx_time_sec << " + " << rx_time_frac << std::endl;
+                    dout << "Extra Time: " << extra_sec << " + " << extra_frac << std::endl;
+                    dout << "Final Packet Time: " << packet_sec << " + " << packet_frac << std::endl;
 
                     //print_timestamp(packet_time);
 

@@ -37,10 +37,13 @@ class blk(gr.sync_block):  # other base classes are basic_block, decim_block, in
             mac_tx = [msg[0]['address 2'], msg[0]['address 1'], msg[0]['address 3']]
             if "e8:94:f6:09:ae:bd" in mac_tx:
                 if self.format_timestamp == 1:
-                    timestamp = msg[0]['wifi_toa']
-                    seconds = int(timestamp)  # Extract seconds
-                    nanoseconds = int((timestamp - seconds) * 1e9)  # Extract nanoseconds
+                    # timestamp = msg[0]['wifi_toa']
+                    # seconds = int(timestamp)  # Extract seconds
+                    # nanoseconds = int((timestamp - seconds) * 1e9)  # Extract nanoseconds
 
+                    seconds = msg[0]['wifi_toa'][0]
+                    nanoseconds = msg[0]['wifi_toa'][1]
+                    
                     formatted_time = f"{datetime.datetime.utcfromtimestamp(seconds).strftime('%Y-%m-%d %H:%M:%S')}.{nanoseconds:09d}"
                     # timestamp = msg[0]['wifi_toa']
                     # dt = datetime.datetime.utcfromtimestamp(timestamp)
@@ -50,5 +53,5 @@ class blk(gr.sync_block):  # other base classes are basic_block, decim_block, in
                 else:
                     print (f"[{self.id}] DroneID Packet found: {msg[0]['wifi_toa']:.9f} - {msg[1]} {mac_tx}")
                 self.id = self.id + 1
-        except:
-            pass
+        except Exception as e:
+            print(f"Error printing message: {e}")

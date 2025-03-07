@@ -6,7 +6,7 @@
 #
 # GNU Radio Python Flow Graph
 # Title: Wifi Rx
-# GNU Radio version: 3.10.7.0
+# GNU Radio version: 3.10.12.0-rc1
 
 from gnuradio import blocks
 from gnuradio import fft
@@ -21,6 +21,7 @@ from gnuradio import eng_notation
 from gnuradio import uhd
 import time
 import ieee802_11
+import threading
 import wifi_rx_epy_block_1 as epy_block_1  # embedded python block
 
 
@@ -30,6 +31,7 @@ class wifi_rx(gr.top_block):
 
     def __init__(self, freq=2412000000, node=0, udp_ip_address='127.0.0.1', udp_port=5005):
         gr.top_block.__init__(self, "Wifi Rx", catch_exceptions=True)
+        self.flowgraph_started = threading.Event()
 
         ##################################################
         # Parameters
@@ -61,11 +63,18 @@ class wifi_rx(gr.top_block):
                 channels=list(range(0,1)),
             ),
         )
+        self.uhd_usrp_source_0.set_clock_source('gpsdo', 0)
+        self.uhd_usrp_source_0.set_time_source('gpsdo', 0)
         self.uhd_usrp_source_0.set_samp_rate(samp_rate)
-        self.uhd_usrp_source_0.set_time_unknown_pps(uhd.time_spec(0))
+        # Set the time to GPS time on next PPS
+        # get_mboard_sensor("gps_time") returns just after the PPS edge,
+        # thus add one second and set the time on the next PPS
+        self.uhd_usrp_source_0.set_time_next_pps(uhd.time_spec(self.uhd_usrp_source_0.get_mboard_sensor("gps_time").to_int() + 1.0))
+        # Sleep 1 second to ensure next PPS has come
+        time.sleep(1)
 
         self.uhd_usrp_source_0.set_center_freq(uhd.tune_request(freq, rf_freq = freq - lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
-        self.uhd_usrp_source_0.set_antenna("TX/RX", 0)
+        self.uhd_usrp_source_0.set_antenna("RX2", 0)
         self.uhd_usrp_source_0.set_normalized_gain(gain, 0)
         self.ieee802_11_sync_short_0 = ieee802_11.sync_short(0.56, 2, False, False)
         self.ieee802_11_sync_long_0 = ieee802_11.sync_long(sync_length, False, False)
@@ -208,7 +217,7 @@ def main(top_block_cls=wifi_rx, options=None):
     if options is None:
         options = argument_parser().parse_args()
     if gr.enable_realtime_scheduling() != gr.RT_OK:
-        gr.logger("realtime").warning("Error: failed to enable real-time scheduling.")
+        gr.logger("realtime").warn("Error: failed to enable real-time scheduling.")
     tb = top_block_cls(freq=options.freq, node=options.node, udp_ip_address=options.udp_ip_address, udp_port=options.udp_port)
 
     def sig_handler(sig=None, frame=None):
@@ -221,6 +230,7 @@ def main(top_block_cls=wifi_rx, options=None):
     signal.signal(signal.SIGTERM, sig_handler)
 
     tb.start()
+    tb.flowgraph_started.set()
 
     try:
         input('Press Enter to quit: ')

@@ -49,7 +49,9 @@ public:
           d_state(SYNC),
           SYNC_LENGTH(sync_length),
           d_sample_counter(0),
-          rx_time(0.0)
+          rx_time(0.0),
+          rx_time_sec(0),
+          rx_time_frac(0)
     {
         // disable tag propagation
         set_tag_propagation_policy(block::TPP_DONT);
@@ -104,16 +106,18 @@ public:
                 }
                 else if (pmt::symbol_to_string(tag.key) == "rx_time") {
                     // pmt::pmt_t rx_time_tag;
-                    uint64_t full_sec = 0;
-                    double frac_sec = 0.0;
+                    // uint64_t full_sec = 0;
+                    // double frac_sec = 0.0;
                     // rx_time_tag = tag.value;
                     const pmt::pmt_t& value = tag.value;
                     
                     if (pmt::is_tuple(tag.value) && pmt::length(tag.value) == 2) {
-                        full_sec = pmt::to_uint64(pmt::tuple_ref(value, 0));
-                        frac_sec = pmt::to_double(pmt::tuple_ref(value, 1));
+                        // full_sec = pmt::to_uint64(pmt::tuple_ref(value, 0));
+                        // frac_sec = pmt::to_double(pmt::tuple_ref(value, 1));
 
-                        rx_time = (double)full_sec + frac_sec;
+                        rx_time_sec = pmt::to_uint64(pmt::tuple_ref(value, 0));
+                        rx_time_frac = (uint64_t)(pmt::to_double(pmt::tuple_ref(value, 1)) * 1e9);
+                        // rx_time = (double)full_sec + frac_sec;
                     }   
                 }
                 else if (pmt::symbol_to_string(tag.key) == "sample_counter") {
@@ -164,7 +168,21 @@ public:
 
                 if (!rel) {
                     // Compute packet arrival time
-                    double packet_time = rx_time + (((double)d_sample_counter + d_frame_start) / 20e6); // sr = 20e6
+                    // Compute extra time from the sample counter (in seconds)
+                    double extra_time = (((double)d_sample_counter + d_frame_start) / 20e6);
+                    uint64_t extra_sec = (uint64_t)(extra_time);
+                    uint64_t extra_nsec = (uint64_t)((extra_time - extra_sec) * 1e9);
+                    
+                    // Compute the complete packet time by adding the extra time to the rx_time parts
+                    uint64_t packet_sec = rx_time_sec + extra_sec;
+                    uint64_t packet_nsec = rx_time_frac + extra_nsec;
+                    if (packet_nsec >= 1000000000) {
+                        packet_sec += 1;
+                        packet_nsec -= 1000000000;
+                    }
+                    pmt::pmt_t packet_time = pmt::make_tuple(pmt::from_uint64(packet_sec), pmt::from_uint64(packet_nsec));
+
+                    // double packet_time = rx_time + ((double)(d_sample_counter + d_frame_start) / 20e6); // sr = 20e6
                     // dout << "rx time: " << rx_time << std::endl;
                     // dout << "rest: " << (((double)d_sample_counter + d_freq_offset_short - d_freq_offset) / 20e6) << std::endl;
                     // dout << "sc: " << (((double)d_sample_counter) / 20e6) << std::endl;
@@ -176,7 +194,7 @@ public:
                     add_item_tag(0,
                                 nitems_written(0),
                                 pmt::string_to_symbol("wifi_toa"),
-                                pmt::from_double(packet_time),
+                                packet_time,
                                 pmt::string_to_symbol(name())
                     );
 
@@ -303,7 +321,10 @@ private:
 
 
     uint64_t d_sample_counter; // Sample counter. Gets incremented in sync_short block
+    
     double rx_time; // Time, when the first sample arrived
+    uint64_t rx_time_sec;
+    uint64_t rx_time_frac;
 };
 
 sync_long::sptr sync_long::make(unsigned int sync_length, bool log, bool debug)

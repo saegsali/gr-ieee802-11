@@ -28,24 +28,16 @@ class udp_sender(gr.basic_block):
             msg = pmt.to_python(msg)
             mac_tx = [msg[0]['address 2'], msg[0]['address 1'], msg[0]['address 3']]
             if "e8:94:f6:09:ae:bd" in mac_tx:
-                timestamp = timestamp = msg[0]['wifi_toa']
-                # Split into integer (seconds) and fractional (nanoseconds)
-                q, mod = divmod(timestamp, 1)
-                seconds = int(q)
-                nanoseconds = int((mod) * 1e9)
+                seconds = msg[0]['wifi_toa'][0]
+                nanoseconds = msg[0]['wifi_toa'][1]
 
-                try:
-                    ssid = msg[0]['ssid']
-                except KeyError:
-                    ssid = "U"
-                    
                 # Create the dictionary message
                 message = {
                     "node": self.node_id,
                     "wifi_toa_sec": seconds,  # Integer part (seconds)
                     "wifi_toa_nsec": nanoseconds,  # Fractional part (nanoseconds)
                     "mac": mac_tx,
-                    "ssid": ssid,
+                    "ssid": msg[0]['ssid'],
                     "sequence number": msg[0]['sequence number'],
                     "snr": msg[0]['snr'],
                     "subtype": msg[0]['subtype'],

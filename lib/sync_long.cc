@@ -116,7 +116,7 @@ public:
                         // frac_sec = pmt::to_double(pmt::tuple_ref(value, 1));
 
                         rx_time_sec = pmt::to_uint64(pmt::tuple_ref(value, 0));
-                        rx_time_frac = (uint64_t)(pmt::to_double(pmt::tuple_ref(value, 1)) * 1e9);
+                        rx_time_frac = pmt::to_double(pmt::tuple_ref(value, 1));
                         // rx_time = (double)full_sec + frac_sec;
                     }   
                 }

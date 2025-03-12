@@ -82,9 +82,10 @@ public:
 
         case SEARCH: {
             // SEACRCH: scan input samples for a correlation peak above the threshold
+            uint64_t sample_counter_tmp = d_sample_counter;
             int i;
-
             for (i = 0; i < ninput; i++) {
+                sample_counter_tmp++;
                 if (in_cor[i] > d_threshold) {
                     if (d_plateau < MIN_PLATEAU) {
                         d_plateau++;
@@ -94,7 +95,7 @@ public:
                         d_copied = 0;
                         d_freq_offset = arg(in_abs[i]) / 16;
                         d_plateau = 0;
-                        insert_tag(nitems_written(0), d_freq_offset, nitems_read(0) + i, d_sample_counter);
+                        insert_tag(nitems_written(0), d_freq_offset, nitems_read(0) + i, sample_counter_tmp);
                         dout << "SHORT Frame!" << std::endl;
                         break;
                     }
@@ -109,8 +110,10 @@ public:
 
         case COPY: {
             // COPY: copy input samples to output and apply frequency correction
+            uint64_t sample_counter_tmp = d_sample_counter;
             int o = 0;
             while (o < ninput && o < noutput && d_copied < MAX_SAMPLES) {
+                sample_counter_tmp++;
                 if (in_cor[o] > d_threshold) {
                     if (d_plateau < MIN_PLATEAU) {
                         d_plateau++;
@@ -122,7 +125,7 @@ public:
                         d_freq_offset = arg(in_abs[o]) / 16;
                         // insert tag at the beginning of the frame with the estimated frequency offset
                         insert_tag(
-                            nitems_written(0) + o, d_freq_offset, nitems_read(0) + o, d_sample_counter);
+                            nitems_written(0) + o, d_freq_offset, nitems_read(0) + o, sample_counter_tmp);
                         dout << "SHORT Frame!" << std::endl;
                         break;
                     }
